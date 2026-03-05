@@ -6,30 +6,49 @@
     <title>Synthèse de Positionnement - TSMEL</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --primary: #0284c7; --bg: #f8fafc; --text: #0f172a; }
+        :root { --primary: #0284c7; --bg: #f8fafc; --text: #0f172a; --border: #e2e8f0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
         .container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        header { border-bottom: 2px solid #f1f5f9; margin-bottom: 30px; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .card { padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; }
-        .chart-container { height: 350px; display: flex; justify-content: center; align-items: center; }
-        .synthesis-box { background: #fffbeb; border-left: 5px solid #f59e0b; padding: 25px; border-radius: 8px; margin-top: 20px; font-size: 1.1rem; line-height: 1.6; }
-        .score-val { font-size: 2.5rem; font-weight: 800; color: var(--primary); display: block; margin-top: 10px; }
-        .btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block; }
+        header { border-bottom: 2px solid #f1f5f9; margin-bottom: 30px; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .card { padding: 24px; border: 1px solid var(--border); border-radius: 12px; background: white; }
+        .card h3 { font-size: 1rem; margin-bottom: 16px; color: var(--primary); border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+        .chart-container { position: relative; height: 280px; }
+        .score-big { font-size: 2.8rem; font-weight: 800; color: var(--primary); display: block; text-align: center; margin-top: 12px; }
+        .score-label { text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 4px; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block; }
         .btn-back { background: #f1f5f9; color: #475569; }
-        .btn-print { background: var(--primary); color: white; margin-left: 10px; }
-        .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
-        .detail-label { color: #64748b; font-weight: 500; }
-        @media print { .no-print { display: none; } .container { box-shadow: none; border: none; max-width: 100%; } }
+        .btn-print { background: var(--primary); color: white; margin-left: 8px; }
+        .detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid #f8fafc; font-size: 0.9rem; gap: 8px; }
+        .detail-label { color: #64748b; font-weight: 500; white-space: nowrap; }
+        .detail-val { text-align: right; color: var(--text); }
+        .bar-wrap { margin: 8px 0; }
+        .bar-label { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 4px; }
+        .bar-bg { height: 10px; background: #e2e8f0; border-radius: 5px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+        .high { background: #22c55e; }
+        .med  { background: #f59e0b; }
+        .low  { background: #ef4444; }
+        .synthesis-box { background: #fffbeb; border-left: 5px solid #f59e0b; padding: 20px 24px; border-radius: 8px; line-height: 1.7; font-size: 0.95rem; }
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-yellow { background: #fef9c3; color: #854d0e; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+        .reponse-block { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; font-size: 0.9rem; }
+        .reponse-block .q { font-weight: 600; margin-bottom: 4px; color: #334155; }
+        .reponse-block .r { color: #0284c7; }
+        @media (max-width: 700px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+        @media print { .no-print { display: none; } .container { box-shadow: none; } }
     </style>
 </head>
 <body>
-
 <div class="container">
     <header>
         <div>
-            <h1 id="nom-apprenant">Chargement...</h1>
-            <p id="info-eval" style="color:#64748b"></p>
+            <h1 id="nom-apprenant" style="font-size:1.5rem;">Chargement...</h1>
+            <p id="info-eval" style="color:#64748b; margin-top: 4px;"></p>
         </div>
         <div class="no-print">
             <a href="index.html" class="btn btn-back">⬅ Retour</a>
@@ -37,120 +56,216 @@
         </div>
     </header>
 
-    <div class="grid">
+    <!-- Scores par domaine -->
+    <div class="grid2">
         <div class="card">
             <h3>📊 Radar de Compétences</h3>
             <div class="chart-container">
-                <canvas id="myChart"></canvas>
+                <canvas id="radarChart"></canvas>
             </div>
         </div>
         <div class="card">
-            <h3>🎯 Résultats par Domaine</h3>
-            <div style="margin-top: 20px;">
-                <div class="detail-row"><span class="detail-label">🇫🇷 Français</span> <strong id="val-fr">0%</strong></div>
-                <div class="detail-row"><span class="detail-label">🔢 Mathématiques</span> <strong id="val-mat">0%</strong></div>
-                <div class="detail-row"><span class="detail-label">🇬🇧 Anglais (B1)</span> <strong id="val-ang">0%</strong></div>
-                <div class="detail-row"><span class="detail-label">📦 Logistique</span> <strong id="val-log">0%</strong></div>
-                <div style="text-align: center; margin-top: 30px;">
-                    <span style="font-size: 0.9rem; color: #64748b;">Moyenne Générale</span>
-                    <span class="score-val" id="global-score">0%</span>
-                </div>
+            <h3>🎯 Score par Domaine</h3>
+            <div id="bars-domaines" style="margin-top: 8px;"></div>
+            <div style="margin-top: 20px; border-top: 2px solid #f1f5f9; padding-top: 16px;">
+                <span class="score-label">Moyenne Générale</span>
+                <span class="score-big" id="global-score">—</span>
             </div>
         </div>
     </div>
 
-    <div class="grid">
+    <!-- Profil + Numérique -->
+    <div class="grid2">
         <div class="card">
             <h3>💼 Profil & Expérience</h3>
-            <div id="profil-details" style="margin-top: 15px; font-size: 0.95rem;">
-                <!-- Rempli par JS -->
-            </div>
+            <div id="profil-details"></div>
         </div>
         <div class="card">
-            <h3>💻 Informatique & Besoins</h3>
-            <div id="besoins-details" style="margin-top: 15px; font-size: 0.95rem;">
-                <!-- Rempli par JS -->
-            </div>
+            <h3>💻 Numérique & Besoins</h3>
+            <div id="besoins-details"></div>
         </div>
     </div>
 
+    <!-- Réponses détaillées -->
+    <div class="card" style="margin-bottom: 24px;">
+        <h3>📋 Réponses Détaillées de l'Apprenant</h3>
+        <div id="reponses-detail" style="margin-top: 8px;"></div>
+    </div>
+
+    <!-- Synthèse -->
     <div class="card">
-        <h3>📝 Synthèse Pédagogique (Auto)</h3>
-        <div class="synthesis-box" id="synthesis">
-            Analyse des réponses en cours...
-        </div>
+        <h3>📝 Synthèse Pédagogique</h3>
+        <div class="synthesis-box" id="synthesis">Analyse en cours...</div>
     </div>
 </div>
 
 <script>
+    // ---- Récupération des données ----
     const urlParams = new URLSearchParams(window.location.search);
     const resultId = urlParams.get('id');
-    const allResults = JSON.parse(localStorage.getItem('eval_results') || '[]');
+    // Compatibilité : clé 'apprenants' (nouveau) ou 'eval_results' (ancien)
+    const allResults = JSON.parse(localStorage.getItem('apprenants') || localStorage.getItem('eval_results') || '[]');
     const result = allResults.find(r => r.id == resultId);
 
     if (!result) {
-        document.body.innerHTML = "<div style='text-align:center; padding:100px;'><h1>❌ Résultat introuvable</h1><p><a href='index.html'>Retour au dashboard</a></p></div>";
+        document.body.innerHTML = `
+            <div style='text-align:center; padding:100px;'>
+                <h1>❌ Résultat introuvable</h1>
+                <p style='margin-top:16px;'><a href='index.html'>⬅ Retour au dashboard</a></p>
+            </div>`;
     } else {
-        const r = result.reponses;
-        const s = result.scores;
+        const d = result.details || result.reponses || {};
 
-        document.getElementById('nom-apprenant').innerText = result.nom;
-        document.getElementById('info-eval').innerText = "Évaluation TP TSMEL du " + result.date;
-        document.getElementById('global-score').innerText = s.glob + "%";
-        document.getElementById('val-fr').innerText = s.fr + "%";
-        document.getElementById('val-mat').innerText = s.mat + "%";
-        document.getElementById('val-ang').innerText = s.ang + "%";
-        document.getElementById('val-log').innerText = s.log + "%";
+        // ---- Calcul scores par domaine ----
+        function pct(correct, total) { return Math.round((correct / total) * 100); }
 
-        // Détails Profil
-        document.getElementById('profil-details').innerHTML = `
-            <div class="detail-row"><span class="detail-label">Diplôme:</span> <span>${r.diplome || 'N/A'}</span></div>
-            <div class="detail-row"><span class="detail-label">Formation Logistique:</span> <span>${r.formation_log}</span></div>
-            <div class="detail-row"><span class="detail-label">Expérience Terrain:</span> <span>${r.travail_log}</span></div>
-            <p style="margin-top:10px; color:#64748b; font-size:0.85rem;"><strong>Attentes:</strong> ${r.attentes || 'Non spécifiées'}</p>
-        `;
+        // Logistique
+        let log = 0;
+        if (d.q_role === 'Oui, parfaitement') log++;
+        if (d.q_bdc === 'Un document qui récapitule une demande d\'achat') log++;
+        if (d.q_ul === 'Oui') log++;
+        const scoreLog = pct(log, 3);
 
-        // Détails Besoins
-        document.getElementById('besoins-details').innerHTML = `
-            <div class="detail-row"><span class="detail-label">Excel:</span> <span>${r.office_excel}</span></div>
-            <div class="detail-row"><span class="detail-label">Publipostage Word:</span> <span>${r.office_word}</span></div>
-            <div class="detail-row"><span class="detail-label">Aide lecture/écriture:</span> <span>${r.besoin_aide}</span></div>
-            <div class="detail-row"><span class="detail-label">Aise à l'oral:</span> <span>${r.aise_oral}</span></div>
-        `;
+        // Français
+        let fr = 0;
+        if (d.q_fr1 === 'Le bon de commande') fr++;
+        if (d.q_fr2 === 'Il émet une réserve sur le bon de livraison') fr++;
+        const scoreFr = pct(fr, 2);
 
-        // Graphique Radar
-        new Chart(document.getElementById('myChart'), {
+        // Maths
+        let mat = 0;
+        if (String(d.q_math1).trim() === '2') mat++;
+        if (String(d.q_math2).trim() === '14400') mat++;
+        if (String(d.q_math4).trim() === '504') mat++;
+        const scoreMat = pct(mat, 3);
+
+        // Anglais
+        let ang = 0;
+        if (d.q_en1 === 'Entrepôt') ang++;
+        if (d.q_en2 === 'Bon de livraison') ang++;
+        const scoreAng = pct(ang, 2);
+
+        // Global (utilise le score sauvegardé ou calcule)
+        const scoreGlobal = result.score !== undefined ? result.score : Math.round((scoreLog + scoreFr + scoreMat + scoreAng) / 4);
+
+        // ---- En-tête ----
+        document.getElementById('nom-apprenant').textContent = (result.prenom || '') + ' ' + (result.nom || '');
+        document.getElementById('info-eval').textContent = 'Positionnement Initial TSMEL — ' + (result.date || '');
+        document.getElementById('global-score').textContent = scoreGlobal + '%';
+        document.getElementById('global-score').className = 'score-big ' + (scoreGlobal >= 70 ? 'high' : scoreGlobal >= 50 ? 'med' : 'low');
+
+        // ---- Barres de score ----
+        const domaines = [
+            { label: '📦 Logistique', score: scoreLog },
+            { label: '📖 Français',   score: scoreFr },
+            { label: '🔢 Maths',      score: scoreMat },
+            { label: '🇬🇧 Anglais',   score: scoreAng }
+        ];
+        const barsEl = document.getElementById('bars-domaines');
+        domaines.forEach(d2 => {
+            const cls = d2.score >= 70 ? 'high' : d2.score >= 50 ? 'med' : 'low';
+            barsEl.innerHTML += `
+                <div class="bar-wrap">
+                    <div class="bar-label"><span>${d2.label}</span><strong>${d2.score}%</strong></div>
+                    <div class="bar-bg"><div class="bar-fill ${cls}" style="width:${d2.score}%"></div></div>
+                </div>`;
+        });
+
+        // ---- Radar Chart ----
+        new Chart(document.getElementById('radarChart'), {
             type: 'radar',
             data: {
-                labels: ['Français', 'Mathématiques', 'Anglais', 'Logistique'],
+                labels: ['Logistique', 'Français', 'Maths', 'Anglais'],
                 datasets: [{
                     label: 'Score %',
-                    data: [s.fr, s.mat, s.ang, s.log],
-                    backgroundColor: 'rgba(2, 132, 199, 0.2)',
+                    data: [scoreLog, scoreFr, scoreMat, scoreAng],
+                    backgroundColor: 'rgba(2,132,199,0.15)',
                     borderColor: '#0284c7',
                     borderWidth: 2,
-                    pointBackgroundColor: '#0284c7'
+                    pointBackgroundColor: '#0284c7',
+                    pointRadius: 5
                 }]
             },
             options: {
-                scales: { r: { min: 0, max: 100, ticks: { display: false } } },
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { r: { min: 0, max: 100, ticks: { stepSize: 25, font: { size: 11 } } } },
                 plugins: { legend: { display: false } }
             }
         });
 
-        // Synthèse Automatique
-        let text = "";
-        if(s.glob >= 75) text = "Excellent profil. L'apprenant dispose de bases solides pour entamer la formation TSMEL. Sa maîtrise des prérequis est rassurante.";
-        else if(s.glob >= 50) text = "Profil satisfaisant mais hétérogène. Certains domaines nécessitent une attention particulière pour ne pas pénaliser la progression technique.";
-        else text = "Profil fragile. Des lacunes importantes sur les fondamentaux risquent de rendre le parcours difficile sans un accompagnement de remise à niveau immédiat.";
+        // ---- Profil ----
+        function row(label, val) {
+            return `<div class="detail-row"><span class="detail-label">${label}</span><span class="detail-val">${val || '—'}</span></div>`;
+        }
+        document.getElementById('profil-details').innerHTML =
+            row('Diplôme', d.diplome || d.autre_diplome) +
+            row('Formation logistique', d.formation_log) +
+            row('Précision formation', d.formation_detail) +
+            row('Expérience terrain', d.travail_log) +
+            row('Précision expérience', d.travail_detail) +
+            `<div style="margin-top:12px; font-size:0.88rem; color:#475569;"><strong>Attentes :</strong><br>${d.attentes || 'Non précisées'}</div>` +
+            `<div style="margin-top:8px;"><span class="badge ${result.score >= 70 ? 'badge-green' : result.score >= 50 ? 'badge-yellow' : 'badge-red'}">Score global : ${scoreGlobal}%</span></div>`;
 
-        if(s.mat < 50) text += " Un renforcement sur la logique mathématique (pourcentages, surfaces) est vivement conseillé.";
-        if(s.fr < 50) text += " La compréhension de textes techniques semble être un point de blocage.";
-        if(r.besoin_aide === 'Oui') text += " [Alerte Accompagnement] L'apprenant signale un besoin d'aide en lecture/écriture.";
+        document.getElementById('besoins-details').innerHTML =
+            row('Niveau informatique', d.q_num1) +
+            row('Logiciel WMS', d.q_num2) +
+            row('Excel / Sheets', d.q_num3) +
+            row('Outil à domicile', d.q_num4) +
+            row('Motivation', d.q_motif) +
+            row('Ressenti', d.q_ressenti) +
+            `<div style="margin-top:12px; font-size:0.88rem; color:#475569;"><strong>Besoins / Contraintes :</strong><br>${d.q_besoins || 'Aucun signalé'}</div>`;
 
-        document.getElementById('synthesis').innerText = text;
+        // ---- Réponses détaillées ----
+        const questions = [
+            { q: 'Rôle d\'un agent logistique', key: 'q_role', bonne: 'Oui, parfaitement' },
+            { q: 'Définition d\'un bon de commande', key: 'q_bdc', bonne: 'Un document qui récapitule une demande d\'achat' },
+            { q: 'Engins de manutention connus', key: 'q_engins', bonne: null },
+            { q: 'Unité logistique (palette/colis)', key: 'q_ul', bonne: 'Oui' },
+            { q: '[Lecture] Document comparé à la réception', key: 'q_fr1', bonne: 'Le bon de commande' },
+            { q: '[Lecture] Action en cas d\'anomalie', key: 'q_fr2', bonne: 'Il émet une réserve sur le bon de livraison' },
+            { q: '[Rédaction libre] Résumé du texte', key: 'q_fr3', bonne: null },
+            { q: '[Maths] Palettes complètes (120÷48)', key: 'q_math1', bonne: '2' },
+            { q: '[Maths] Charge totale (18×800 kg)', key: 'q_math2', bonne: '14400' },
+            { q: '[Maths] % colis conformes', key: 'q_math3', bonne: null },
+            { q: '[Maths] Coût 144 unités à 3,50€', key: 'q_math4', bonne: '504' },
+            { q: '[Anglais] "warehouse"', key: 'q_en1', bonne: 'Entrepôt' },
+            { q: '[Anglais] "delivery note"', key: 'q_en2', bonne: 'Bon de livraison' },
+            { q: '[Anglais] Traduction libre', key: 'q_en3', bonne: null },
+            { q: '[Anglais] Auto-évaluation niveau', key: 'q_en4', bonne: null }
+        ];
+
+        const repEl = document.getElementById('reponses-detail');
+        questions.forEach(item => {
+            const val = d[item.key];
+            if (!val) return;
+            const isCorrect = item.bonne ? (Array.isArray(val) ? val.includes(item.bonne) : String(val).trim() === item.bonne) : null;
+            let badge = '';
+            if (isCorrect === true) badge = '<span class="badge badge-green">✓ Correct</span>';
+            else if (isCorrect === false) badge = '<span class="badge badge-red">✗ Incorrect</span>';
+            else badge = '<span class="badge badge-yellow">→ Réponse libre</span>';
+            repEl.innerHTML += `
+                <div class="reponse-block">
+                    <div class="q">${item.q} ${badge}</div>
+                    <div class="r">${Array.isArray(val) ? val.join(', ') : val}</div>
+                    ${item.bonne && isCorrect === false ? '<div style="font-size:0.8rem;color:#64748b;margin-top:4px;">Bonne réponse : ' + item.bonne + '</div>' : ''}
+                </div>`;
+        });
+
+        // ---- Synthèse Pédagogique ----
+        let syn = '';
+        if (scoreGlobal >= 75) syn = '✅ Excellent profil. L\'apprenant dispose de bases solides pour entamer la formation TSMEL. Sa maîtrise des prérequis est rassurante.';
+        else if (scoreGlobal >= 50) syn = '⚠️ Profil satisfaisant mais hétérogène. Certains domaines nécessitent une attention particulière pour ne pas pénaliser la progression.';
+        else syn = '🔴 Profil fragile. Des lacunes importantes risquent de rendre le parcours difficile sans un accompagnement de remise à niveau rapide.';
+
+        if (scoreMat < 50) syn += ' Un renforcement en calcul logistique (pourcentages, masses, coûts) est vivement conseillé.';
+        if (scoreFr < 50) syn += ' La compréhension de documents professionnels écrits est un point de vigilance.';
+        if (scoreAng < 50) syn += ' Le vocabulaire anglais métier devra être travaillé en cours de formation.';
+        if (scoreLog < 50) syn += ' Des notions de base sur les opérations en entrepôt sont à consolider dès le début.';
+        if (d.q_besoins && d.q_besoins.trim().length > 3) syn += ' ⚠️ Besoin spécifique signalé : « ' + d.q_besoins + ' ».';
+
+        document.getElementById('synthesis').textContent = syn;
     }
 </script>
-
 </body>
 </html>
