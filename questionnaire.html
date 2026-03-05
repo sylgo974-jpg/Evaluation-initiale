@@ -3,298 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Questionnaire de Positionnement - TSMEL</title>
+    <title>Positionnement Initial - TSMEL</title>
     <style>
         :root {
             --primary: #38bdf8;
             --primary-hover: #0ea5e9;
-            --bg-base: #ffffff;
-            --bg-surface: #f1f5f9;
-            --bg-muted: #e2e8f0;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --border: rgba(148, 163, 184, 0.3);
-            --radius-lg: 12px;
-            --radius-base: 8px;
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.15);
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-base);
-            color: var(--text-primary);
-            line-height: 1.6;
-            padding: 20px;
-        }
-        .container { max-width: 900px; margin: 0 auto; }
-        header {
-            background: var(--bg-surface);
-            padding: 30px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-        h1 { color: var(--primary); margin-bottom: 10px; }
-        .progress-bar { width: 100%; height: 8px; background: var(--bg-muted); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), #10b981); width: 0%; transition: width 0.3s ease; }
-        .section { display: none; background: var(--bg-surface); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-md); }
-        .section.active { display: block; }
-        .section-title { color: var(--primary); margin-bottom: 25px; font-size: 1.5rem; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 500; }
-        input[type="text"], input[type="date"], textarea, select {
-            width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-base); background: white; font-size: 1rem;
-        }
-        .question-block { background: white; padding: 20px; border-radius: var(--radius-base); margin-bottom: 20px; border: 1px solid var(--border); }
-        .question-title { font-weight: 600; margin-bottom: 15px; }
-        .radio-group, .checkbox-group { display: flex; flex-wrap: wrap; gap: 15px; }
-        .radio-item, .checkbox-item { display: flex; align-items: center; gap: 8px; }
-        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
-        .btn { padding: 14px 28px; border: none; border-radius: var(--radius-base); cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 1rem; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: var(--bg-muted); color: var(--text-primary); }
-        .skill-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; align-items: center; padding: 10px; background: white; border-radius: 8px; margin-bottom: 5px; border: 1px solid var(--border); }
-        .skill-grid.header { font-weight: bold; background: var(--bg-muted); color: var(--primary); }
-        #success-screen { display: none; text-align: center; padding: 50px; background: var(--bg-surface); border-radius: var(--radius-lg); }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: var(--card); padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        h1 { font-size: 1.875rem; color: var(--text); margin-bottom: 8px; text-align: center; }
+        p.subtitle { text-align: center; color: var(--text-muted); margin-bottom: 32px; }
+        
+        .step { display: none; }
+        .step.active { display: block; }
+        
+        .form-group { margin-bottom: 24px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; }
+        input[type="text"], textarea, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 1rem; }
+        
+        .options { display: grid; gap: 12px; margin-top: 8px; }
+        .option { display: flex; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .option:hover { background: #f1f5f9; }
+        .option input { margin-right: 12px; }
+        
+        .btn-group { display: flex; justify-content: space-between; margin-top: 32px; }
+        button { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: opacity 0.2s; }
+        .btn-next { background: var(--primary); color: white; }
+        .btn-prev { background: #e2e8f0; color: var(--text); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .progress-bar { height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 32px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s ease; }
+        
+        .text-passage { background: #f1f5f9; padding: 20px; border-radius: 8px; margin-bottom: 20px; font-style: italic; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header id="main-header">
-            <h1>📋 Positionnement Initial TSMEL</h1>
-            <p>Evaluation diagnostique - Session de Formation</p>
-        </header>
 
-        <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
-
-        <form id="learnerForm">
-            <!-- STEP 1: Info -->
-            <div class="section active" id="step-info">
-                <h2 class="section-title">👤 Informations Générales</h2>
-                <div class="form-group">
-                    <label>Votre Nom</label>
-                    <input type="text" id="nom" required>
-                </div>
-                <div class="form-group">
-                    <label>Votre Prénom</label>
-                    <input type="text" id="prenom" required>
-                </div>
-                <div class="form-group">
-                    <label>Date du jour</label>
-                    <input type="date" id="dateEval" required>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-primary" onclick="nextStep('step-experience')">Suivant ➡️</button>
-                </div>
-            </div>
-
-            <!-- STEP 2: Experience -->
-            <div class="section" id="step-experience">
-                <h2 class="section-title">💼 Expérience Professionnelle</h2>
-                <div class="question-block">
-                    <p class="question-title">Avez-vous déjà suivi une formation en logistique ?</p>
-                    <div class="radio-group">
-                        <label class="radio-item"><input type="radio" name="exp_form" value="oui"> Oui</label>
-                        <label class="radio-item"><input type="radio" name="exp_form" value="non"> Non</label>
-                    </div>
-                </div>
-                <div class="question-block">
-                    <p class="question-title">Avez-vous déjà travaillé dans la logistique ?</p>
-                    <div class="radio-group">
-                        <label class="radio-item"><input type="radio" name="exp_trav" value="oui"> Oui</label>
-                        <label class="radio-item"><input type="radio" name="exp_trav" value="non"> Non</label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Vos attentes vis-à-vis de cette formation :</label>
-                    <textarea id="attentes"></textarea>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep('step-info')">Précédent</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep('step-logistique')">Suivant ➡️</button>
-                </div>
-            </div>
-
-            <!-- STEP 3: Logistique -->
-            <div class="section" id="step-logistique">
-                <h2 class="section-title">📦 Auto-évaluation Logistique</h2>
-                <div class="skill-grid header">
-                    <div>Compétence</div><div>Déb.</div><div>Encours</div><div>Acquis</div>
-                </div>
-                <div class="skill-grid">
-                    <div>Organiser les flux</div>
-                    <input type="radio" name="comp1" value="debutant">
-                    <input type="radio" name="comp1" value="encours">
-                    <input type="radio" name="comp1" value="maitrise">
-                </div>
-                <div class="skill-grid">
-                    <div>Utiliser un WMS</div>
-                    <input type="radio" name="comp2" value="debutant">
-                    <input type="radio" name="comp2" value="encours">
-                    <input type="radio" name="comp2" value="maitrise">
-                </div>
-                <div class="skill-grid">
-                    <div>Gérer les indicateurs</div>
-                    <input type="radio" name="comp3" value="debutant">
-                    <input type="radio" name="comp3" value="encours">
-                    <input type="radio" name="comp3" value="maitrise">
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep('step-experience')">Précédent</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep('step-maths')">Suivant ➡️</button>
-                </div>
-            </div>
-
-            <!-- STEP 4: Maths -->
-            <div class="section" id="step-maths">
-                <h2 class="section-title">🧮 Mathématiques Appliquées</h2>
-                <div class="question-block">
-                    <p class="question-title">1. Un entrepôt reçoit 450 colis le matin et 375 l'après-midi. Total ?</p>
-                    <input type="text" id="math1" placeholder="Votre réponse">
-                </div>
-                <div class="question-block">
-                    <p class="question-title">2. Calculez 15% de 2400 (remise fournisseur) :</p>
-                    <input type="text" id="math2" placeholder="Votre réponse">
-                </div>
-                <div class="question-block">
-                    <p class="question-title">3. Un camion peut transporter 24 palettes. Combien de camions pour 156 palettes ?</p>
-                    <input type="text" id="math3" placeholder="Votre réponse">
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep('step-logistique')">Précédent</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep('step-anglais')">Suivant ➡️</button>
-                </div>
-            </div>
-
-            <!-- STEP 5: Anglais -->
-            <div class="section" id="step-anglais">
-                <h2 class="section-title">🇬🇧 Test d'Anglais (QCM)</h2>
-                <div class="question-block">
-                    <p class="question-title">1. How do you say "Entrepôt" in English?</p>
-                    <div class="radio-group">
-                        <label class="radio-item"><input type="radio" name="anglais1" value="a"> Workshop</label>
-                        <label class="radio-item"><input type="radio" name="anglais1" value="b"> Warehouse</label>
-                        <label class="radio-item"><input type="radio" name="anglais1" value="c"> Office</label>
-                    </div>
-                </div>
-                <div class="question-block">
-                    <p class="question-title">2. "The goods ______ delivered tomorrow."</p>
-                    <div class="radio-group">
-                        <label class="radio-item"><input type="radio" name="anglais2" value="a"> arrive</label>
-                        <label class="radio-item"><input type="radio" name="anglais2" value="b"> will be</label>
-                        <label class="radio-item"><input type="radio" name="anglais2" value="c"> have been</label>
-                    </div>
-                </div>
-                <div class="question-block">
-                    <p class="question-title">3. What does "ASAP" mean?</p>
-                    <div class="radio-group">
-                        <label class="radio-item"><input type="radio" name="anglais3" value="a"> As Soon As Possible</label>
-                        <label class="radio-item"><input type="radio" name="anglais3" value="b"> As Slow As Possible</label>
-                    </div>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep('step-maths')">Précédent</button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep('step-apprentissage')">Suivant ➡️</button>
-                </div>
-            </div>
-
-            <!-- STEP 6: Apprentissage -->
-            <div class="section" id="step-apprentissage">
-                <h2 class="section-title">🧠 Modalités d'Apprentissage</h2>
-                <div class="question-block">
-                    <p class="question-title">Style d'apprentissage dominant :</p>
-                    <div class="radio-group">
-                        <label class="radio-item"><input type="radio" name="style" value="visuel"> Visuel</label>
-                        <label class="radio-item"><input type="radio" name="style" value="auditif"> Auditif</label>
-                        <label class="radio-item"><input type="radio" name="style" value="pratique"> Pratique</label>
-                    </div>
-                </div>
-                <div class="question-block">
-                    <p class="question-title">Besoin d'aide en lecture/écriture ?</p>
-                    <div class="radio-group">
-                        <label class="radio-item"><input type="radio" name="aide" value="oui"> Oui</label>
-                        <label class="radio-item"><input type="radio" name="aide" value="non"> Non</label>
-                    </div>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep('step-anglais')">Précédent</button>
-                    <button type="button" class="btn btn-primary" onclick="submitForm()">✅ Valider mon positionnement</button>
-                </div>
-            </div>
-        </form>
-
-        <div id="success-screen">
-            <h1 style="color: #10b981;">Envoi réussi ! 📤</h1>
-            <p>Merci pour vos réponses. Le formateur va analyser votre profil.</p>
-            <button class="btn btn-secondary" style="margin-top: 20px;" onclick="location.reload()">Recommencer</button>
-        </div>
+<div class="container">
+    <h1>Grille de Positionnement Initial</h1>
+    <p class="subtitle">Formation TSMEL - Évaluation des prérequis</p>
+    
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress" style="width: 25%"></div>
     </div>
 
-    <script>
-        const steps = ['step-info', 'step-experience', 'step-logistique', 'step-maths', 'step-anglais', 'step-apprentissage'];
-        
-        function updateProgress(stepId) {
-            const idx = steps.indexOf(stepId);
-            const progress = ((idx) / (steps.length - 1)) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-        }
+    <form id="quizForm">
+        <!-- Étape 1 -->
+        <div class="step active" id="step1">
+            <h3>Identification</h3>
+            <div class="form-group">
+                <label>Nom complet</label>
+                <input type="text" name="nom" required placeholder="Ex: Jean Dupont">
+            </div>
+            <div class="form-group">
+                <label>Dernier diplôme obtenu</label>
+                <input type="text" name="diplome" placeholder="Ex: Bac Pro Logistique">
+            </div>
+            <div class="form-group">
+                <label>Expérience en logistique ?</label>
+                <select name="exp_log">
+                    <option value="non">Aucune</option>
+                    <option value="oui">Moins de 2 ans</option>
+                    <option value="expert">Plus de 2 ans</option>
+                </select>
+            </div>
+            <div class="btn-group">
+                <span></span>
+                <button type="button" class="btn-next" onclick="nextStep(2)">Suivant</button>
+            </div>
+        </div>
 
-        function nextStep(stepId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(stepId).classList.add('active');
-            updateProgress(stepId);
-            window.scrollTo(0,0);
-        }
+        <!-- Étape 2 -->
+        <div class="step" id="step2">
+            <h3>Compréhension Française</h3>
+            <div class="text-passage">
+                "Le gestionnaire TSMEL doit veiller à l'optimisation des flux. La coordination entre les services achat, transport et entrepôt est le gage d'une chaîne logistique performante. Une erreur de saisie peut entraîner des retards de livraison importants."
+            </div>
+            <div class="form-group">
+                <label>Quel est l'élément clé d'une chaîne performante ?</label>
+                <div class="options">
+                    <label class="option"><input type="radio" name="fr1" value="10"> La coordination des services</label>
+                    <label class="option"><input type="radio" name="fr1" value="0"> L'achat de nouveaux camions</label>
+                    <label class="option"><input type="radio" name="fr1" value="0"> L'augmentation des stocks</label>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(1)">Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(3)">Suivant</button>
+            </div>
+        </div>
 
-        function prevStep(stepId) {
-            nextStep(stepId);
-        }
+        <!-- Étape 3 -->
+        <div class="step" id="step3">
+            <h3>Mathématiques</h3>
+            <div class="form-group">
+                <label>Une palette pèse 450 kg. Combien pèsent 5 palettes ?</label>
+                <input type="number" name="mat1">
+            </div>
+            <div class="form-group">
+                <label>Un prix de 100€ subit une remise de 15%. Quel est le nouveau prix ?</label>
+                <input type="number" name="mat2">
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(2)">Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(4)">Suivant</button>
+            </div>
+        </div>
 
-        function submitForm() {
-            const data = {
-                id: 'APP-' + Date.now().toString(36).toUpperCase(),
-                dateValidation: new Date().toISOString(),
-                nom: document.getElementById('nom').value,
-                prenom: document.getElementById('prenom').value,
-                date: document.getElementById('dateEval').value,
-                experience: {
-                    formation: document.querySelector('input[name="exp_form"]:checked')?.value,
-                    travail: document.querySelector('input[name="exp_trav"]:checked')?.value,
-                    attentes: document.getElementById('attentes').value
-                },
-                competences: {
-                    comp1: document.querySelector('input[name="comp1"]:checked')?.value,
-                    comp2: document.querySelector('input[name="comp2"]:checked')?.value,
-                    comp3: document.querySelector('input[name="comp3"]:checked')?.value
-                },
-                maths: {
-                    m1: document.getElementById('math1').value,
-                    m2: document.getElementById('math2').value,
-                    m3: document.getElementById('math3').value
-                },
-                anglais: {
-                    a1: document.querySelector('input[name="anglais1"]:checked')?.value,
-                    a2: document.querySelector('input[name="anglais2"]:checked')?.value,
-                    a3: document.querySelector('input[name="anglais3"]:checked')?.value
-                },
-                apprentissage: {
-                    style: document.querySelector('input[name="style"]:checked')?.value,
-                    aide: document.querySelector('input[name="aide"]:checked')?.value
-                }
-            };
+        <!-- Étape 4 -->
+        <div class="step" id="step4">
+            <h3>Anglais (QCM)</h3>
+            <div class="form-group">
+                <label>1. "Supply Chain" means:</label>
+                <div class="options">
+                    <label class="option"><input type="radio" name="ang1" value="10"> Chaîne logistique</label>
+                    <label class="option"><input type="radio" name="ang1" value="0"> Magasin de sport</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>2. "Delivery" means:</label>
+                <div class="options">
+                    <label class="option"><input type="radio" name="ang2" value="10"> Livraison</label>
+                    <label class="option"><input type="radio" name="ang2" value="0"> Facturation</label>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(3)">Retour</button>
+                <button type="button" class="btn-next" onclick="finishQuiz()">Valider</button>
+            </div>
+        </div>
+    </form>
+</div>
 
-            localStorage.setItem('apprenant_' + data.id, JSON.stringify(data));
-            
-            document.getElementById('learnerForm').style.display = 'none';
-            document.getElementById('main-header').style.display = 'none';
-            document.querySelector('.progress-bar').style.display = 'none';
-            document.getElementById('success-screen').style.display = 'block';
-        }
-
-        document.getElementById('dateEval').value = new Date().toISOString().split('T')[0];
-        updateProgress('step-info');
-    </script>
+<script>
+    let currentStep = 1;
+    function updateProgress() { document.getElementById('progress').style.width = (currentStep / 4 * 100) + '%'; }
+    function nextStep(s) { document.getElementById('step'+currentStep).classList.remove('active'); currentStep=s; document.getElementById('step'+currentStep).classList.add('active'); updateProgress(); }
+    function prevStep(s) { document.getElementById('step'+currentStep).classList.remove('active'); currentStep=s; document.getElementById('step'+currentStep).classList.add('active'); updateProgress(); }
+    function finishQuiz() {
+        const d = Object.fromEntries(new FormData(document.getElementById('quizForm')).entries());
+        let sf = parseInt(d.fr1||0)*10;
+        let sm = 0; if(d.mat1=='2250') sm+=50; if(d.mat2=='85') sm+=50;
+        let sa = (parseInt(d.ang1||0) + parseInt(d.ang2||0))*5;
+        const res = { id:Date.now(), nom:d.nom, scores:{fr:sf, mat:sm, ang:sa, glob:Math.round((sf+sm+sa)/3)}, reponses:d };
+        let all = JSON.parse(localStorage.getItem('eval_results')||'[]');
+        all.push(res);
+        localStorage.setItem('eval_results', JSON.stringify(all));
+        alert('Terminé !'); window.location.href='index.html';
+    }
+</script>
 </body>
 </html>
