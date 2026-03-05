@@ -126,10 +126,6 @@
             font-weight: bold;
             margin-top: 8px;
         }
-        .status-en-cours {
-            background: #ffeaa7;
-            color: #d63031;
-        }
         .status-complete {
             background: #55efc4;
             color: #00b894;
@@ -172,7 +168,6 @@
         </header>
 
         <div class="main-grid">
-            <!-- Colonne gauche : QR Code et Lien -->
             <div class="card no-print">
                 <h2>📱 Accès Apprenants</h2>
                 <div class="instructions">
@@ -181,7 +176,6 @@
                         <li>Partagez le QR code ou le lien aux apprenants</li>
                         <li>Ils accèderont au questionnaire depuis leur smartphone/tablette/PC</li>
                         <li>Les réponses apparaîtront automatiquement ci-contre</li>
-                        <li>Cliquez sur un apprenant pour voir le détail et exporter en PDF</li>
                     </ul>
                 </div>
                 
@@ -196,13 +190,11 @@
                 </div>
             </div>
 
-            <!-- Colonne droite : Liste des apprenants -->
             <div class="card">
                 <h2>👥 Apprenants Enregistrés</h2>
                 <div class="apprenants-list" id="apprenants-list">
                     <div class="no-data">
                         <p>Aucun questionnaire reçu pour le moment.</p>
-                        <p style="margin-top: 10px; font-size: 14px;">Les réponses des apprenants apparaîtront ici en temps réel.</p>
                     </div>
                 </div>
             </div>
@@ -210,10 +202,10 @@
     </div>
 
     <script>
-        // Configuration
-        const QUESTIONNAIRE_URL = window.location.origin + window.location.pathname.replace('index.html', 'questionnaire.html');
+        // CORRECTION ICI : Le QR code doit pointer vers questionnaire.html
+        const currentPath = window.location.pathname;
+        const QUESTIONNAIRE_URL = window.location.origin + currentPath.substring(0, currentPath.lastIndexOf('/') + 1) + 'questionnaire.html';
         
-        // Générer le QR Code
         document.addEventListener('DOMContentLoaded', () => {
             new QRCode(document.getElementById("qrcode"), {
                 text: QUESTIONNAIRE_URL,
@@ -225,11 +217,7 @@
             });
             
             document.getElementById('questionnaire-link').value = QUESTIONNAIRE_URL;
-            
-            // Charger les données depuis localStorage
             chargerApprenants();
-            
-            // Rafraîchir toutes les 2 secondes
             setInterval(chargerApprenants, 2000);
         });
 
@@ -237,7 +225,7 @@
             const input = document.getElementById('questionnaire-link');
             input.select();
             document.execCommand('copy');
-            alert('✅ Lien copié dans le presse-papier !');
+            alert('✅ Lien copié !');
         }
 
         function chargerApprenants() {
@@ -245,59 +233,27 @@
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key.startsWith('apprenant_')) {
-                    try {
-                        const data = JSON.parse(localStorage.getItem(key));
-                        apprenants.push(data);
-                    } catch (e) {
-                        console.error('Erreur parsing:', e);
-                    }
+                    try { apprenants.push(JSON.parse(localStorage.getItem(key))); } catch (e) {}
                 }
             }
-            
             afficherApprenants(apprenants);
         }
 
         function afficherApprenants(apprenants) {
             const container = document.getElementById('apprenants-list');
-            
             if (apprenants.length === 0) {
-                container.innerHTML = `
-                    <div class="no-data">
-                        <p>Aucun questionnaire reçu pour le moment.</p>
-                        <p style="margin-top: 10px; font-size: 14px;">Les réponses des apprenants apparaîtront ici en temps réel.</p>
-                    </div>
-                `;
+                container.innerHTML = '<div class="no-data"><p>Aucun questionnaire reçu.</p></div>';
                 return;
             }
-            
-            // Trier par date (plus récent en premier)
             apprenants.sort((a, b) => new Date(b.dateValidation) - new Date(a.dateValidation));
-            
-            container.innerHTML = apprenants.map(app => {
-                const date = new Date(app.dateValidation);
-                const dateStr = date.toLocaleDateString('fr-FR', { 
-                    day: '2-digit', 
-                    month: '2-digit', 
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                return `
-                    <div class="apprenant-card" onclick="ouvrirDetailApprenant('${app.id}')">
-                        <h3>${app.nom} ${app.prenom}</h3>
-                        <p>📧 ${app.email}</p>
-                        <p>📞 ${app.telephone}</p>
-                        <p>📅 Soumis le : ${dateStr}</p>
-                        <span class="status-badge status-complete">✓ Complété</span>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function ouvrirDetailApprenant(id) {
-            // Ouvrir la vue détaillée dans un nouvel onglet ou une modale
-            window.open('formateur-detail.html?id=' + id, '_blank');
+            container.innerHTML = apprenants.map(app => `
+                <div class="apprenant-card" onclick="window.open('formateur-detail.html?id=${app.id}', '_blank')">
+                    <h3>${app.nom} ${app.prenom}</h3>
+                    <p>📧 ${app.email}</p>
+                    <p>📅 ${new Date(app.dateValidation).toLocaleString('fr-FR')}</p>
+                    <span class="status-badge status-complete">✓ Complété</span>
+                </div>
+            `).join('');
         }
     </script>
 </body>
