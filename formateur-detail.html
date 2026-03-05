@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Apprenant - TSMEL</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --primary: #667eea; --secondary: #764ba2; --success: #48bb78; --danger: #f56565; --bg: #f7fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 30px; color: #2d3748; }
+        .dashboard { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .profile-header { text-align: center; margin-bottom: 30px; }
+        .profile-header h1 { font-size: 24px; color: var(--primary); }
+        .score-box { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #edf2f7; }
+        .score-box b { color: #4a5568; }
+        .score-val { font-weight: bold; padding: 4px 12px; border-radius: 20px; font-size: 14px; }
+        .val-good { background: #c6f6d5; color: #22543d; }
+        .val-mid { background: #feebc8; color: #744210; }
+        .val-bad { background: #fed7d7; color: #742a2a; }
+        .chart-container { height: 300px; margin-top: 20px; }
+        .synthesis { background: #fffaf0; border-left: 5px solid #ed8936; padding: 20px; border-radius: 8px; line-height: 1.6; }
+        .correction-item { margin-bottom: 15px; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
+        .correction-item.correct { border-left: 4px solid var(--success); background: #f0fff4; }
+        .correction-item.wrong { border-left: 4px solid var(--danger); background: #fff5f5; }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="dashboard" id="main-dashboard">
+        <!-- Sidebar: Info & Stats -->
+        <div class="card no-print">
+            <div class="profile-header">
+                <h1 id="app-name">Chargement...</h1>
+                <p id="app-date" style="font-size: 14px; color: #a0aec0;"></p>
+            </div>
+            
+            <div id="scores-summary">
+                <!-- Scores injected here -->
+            </div>
+
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+            
+            <button class="btn-action" onclick="window.print()">🖨️ Imprimer la synthèse</button>
+        </div>
+
+        <!-- Main Content: Synthesis & Correction -->
+        <div class="card">
+            <h2 style="margin-bottom: 20px; color: var(--secondary);">🔍 Analyse du Positionnement</h2>
+            
+            <div class="synthesis">
+                <h3 style="margin-bottom: 10px;">🤖 Synthèse Automatique</h3>
+                <p id="synthesis-text">Analyse des données en cours...</p>
+            </div>
+
+            <h3 style="margin-top: 30px; margin-bottom: 15px;">📝 Correction Détaillée</h3>
+            <div id="correction-list">
+                <!-- Correction injected here -->
+            </div>
+
+            <div style="margin-top: 30px; background: #ebf8ff; padding: 20px; border-radius: 8px; border-left: 5px solid #3182ce;">
+                <h3 style="color: #2b6cb0; margin-bottom: 10px;">✍️ Notes du Formateur</h3>
+                <textarea id="formateur-notes" style="width:100%; height:100px; border-radius:8px; border:1px solid #bee3f8; padding:10px;" placeholder="Ajoutez vos préconisations pédagogiques..."></textarea>
+                <button class="btn-action" style="background:#3182ce;" onclick="saveNotes()">💾 Enregistrer les notes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const appId = urlParams.get('id');
+        const correctAnswers = {
+            fr_q1: "B",
+            math_q1: "8",
+            math_q2: "170",
+            math_q3: "5",
+            eng_q1: "B",
+            eng_q2: "A",
+            eng_q3: "B",
+            office_excel: "RECHERCHEV"
+        };
+
+        function calculateResults() {
+            const data = JSON.parse(localStorage.getItem('apprenant_' + appId));
+            if (!data) return;
+
+            document.getElementById('app-name').innerText = data.nom + " " + data.prenom;
+            document.getElementById('app-date').innerText = "Session du " + new Date(data.dateValidation).toLocaleDateString();
+
+            let results = {
+                français: { score: 0, total: 1 },
+                maths: { score: 0, total: 3 },
+                anglais: { score: 0, total: 3 },
+                logiciel: { score: 0, total: 1 }
+            };
+
+            // Scoring logic
+            if (data.fr_q1 === correctAnswers.fr_q1) results.français.score++;
+            if (data.math_q1 === correctAnswers.math_q1) results.maths.score++;
+            if (data.math_q2.replace(/\s/g, '') === correctAnswers.math_q2) results.maths.score++;
+            if (data.math_q3 === correctAnswers.math_q3) results.maths.score++;
+            if (data.eng_q1 === correctAnswers.eng_q1) results.anglais.score++;
+            if (data.eng_q2 === correctAnswers.eng_q2) results.anglais.score++;
+            if (data.eng_q3 === correctAnswers.eng_q3) results.anglais.score++;
+            if (data.office_excel === correctAnswers.office_excel) results.logiciel.score++;
+
+            renderUI(data, results);
+        }
+
+        function renderUI(data, results) {
+            // Summary
+            const summary = document.getElementById('scores-summary');
+            for (let cat in results) {
+                const pc = (results[cat].score / results[cat].total) * 100;
+                let cls = pc > 70 ? 'val-good' : (pc > 40 ? 'val-mid' : 'val-bad');
+                summary.innerHTML += `
+                    <div class="score-box">
+                        <b>${cat.toUpperCase()}</b>
+                        <span class="score-val ${cls}">${results[cat].score}/${results[cat].total}</span>
+                    </div>`;
+            }
+
+            // Radar Chart
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Français', 'Maths', 'Anglais', 'Logiciel'],
+                    datasets: [{
+                        label: 'Niveau (%)',
+                        data: [
+                            (results.français.score/results.français.total)*100,
+                            (results.maths.score/results.maths.total)*100,
+                            (results.anglais.score/results.anglais.total)*100,
+                            (results.logiciel.score/results.logiciel.total)*100
+                        ],
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                        borderColor: '#667eea',
+                        pointBackgroundColor: '#667eea'
+                    }]
+                },
+                options: { scales: { r: { beginAtZero: true, max: 100 } } }
+            });
+
+            // Synthesis
+            let synth = "";
+            if (results.français.score === 0) synth += "⚠️ Attention : Compréhension de texte à travailler. ";
+            if (results.maths.score < 2) synth += "📉 Difficultés en calcul de base identifiées. ";
+            if (results.anglais.score > 1) synth += "🇬🇧 Bonnes bases en anglais technique. ";
+            if (data.log_role.length < 20) synth += "📦 Connaissance métier encore floue. ";
+            document.getElementById('synthesis-text').innerText = synth || "Profil équilibré, prêt pour la formation.";
+
+            // Correction List
+            const list = document.getElementById('correction-list');
+            const items = [
+                { q: "Français Q1", val: data.fr_q1, target: correctAnswers.fr_q1 },
+                { q: "Maths: Palettes", val: data.math_q1, target: correctAnswers.math_q1 },
+                { q: "Maths: Remise", val: data.math_q2, target: correctAnswers.math_q2 },
+                { q: "Anglais: Warehouse", val: data.eng_q1, target: correctAnswers.eng_q1 },
+                { q: "Excel: Fonction", val: data.office_excel, target: correctAnswers.office_excel }
+            ];
+
+            list.innerHTML = items.map(item => {
+                const isOk = item.val === item.target;
+                return `
+                    <div class="correction-item ${isOk ? 'correct' : 'wrong'}">
+                        <b>${item.q}</b> : ${item.val || 'Non répondu'} 
+                        ${!isOk ? `(Attendu: ${item.target})` : '✅'}
+                    </div>`;
+            }).join('');
+
+            // Load notes
+            document.getElementById('formateur-notes').value = localStorage.getItem('notes_' + appId) || "";
+        }
+
+        function saveNotes() {
+            localStorage.setItem('notes_' + appId, document.getElementById('formateur-notes').value);
+            alert("✅ Notes enregistrées !");
+        }
+
+        window.onload = calculateResults;
+    </script>
+</body>
+</html>
