@@ -3,114 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grille de Positionnement Initial - TSMEL</title>
+    <title>Positionnement Initial - TSMEL</title>
     <style>
         :root { --primary: #667eea; --secondary: #764ba2; --bg: #f8f9fa; --text: #2d3436; --white: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         header { text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 2px solid #eee; }
-        h1 { color: var(--primary); font-size: 24px; margin-bottom: 10px; }
+        h1 { color: var(--primary); font-size: 26px; margin-bottom: 10px; }
         .section { margin-bottom: 30px; padding: 25px; border: 1px solid #edf2f7; border-radius: 15px; background: #fff; }
-        .section-title { font-size: 1.25em; color: var(--secondary); margin-bottom: 20px; font-weight: bold; border-left: 4px solid var(--primary); padding-left: 15px; }
+        .section-title { font-size: 1.3em; color: var(--secondary); margin-bottom: 20px; font-weight: bold; border-left: 5px solid var(--primary); padding-left: 15px; }
         .question { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 15px; }
-        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; transition: all 0.3s; }
+        label { display: block; font-weight: 600; margin-bottom: 10px; font-size: 15px; color: #4a5568; }
+        .reading-text { background: #fdf2f2; padding: 20px; border-radius: 10px; border-left: 4px solid #f56565; margin-bottom: 20px; font-style: italic; font-size: 0.95em; }
+        input[type="text"], input[type="email"], input[type="tel"], select, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; transition: all 0.3s; }
         input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .qcm-options { display: grid; gap: 10px; }
+        .qcm-item { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid #f1f5f9; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .qcm-item:hover { background: #f8fafc; border-color: var(--primary); }
+        .qcm-item input { width: auto; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .btn-submit { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
-        #success-screen { display: none; text-align: center; padding: 50px; }
+        .btn-submit { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; padding: 20px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; transition: 0.3s; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
+        #success-screen { display: none; text-align: center; padding: 60px 20px; }
+        .validation-card { background: #f0fff4; padding: 20px; border-radius: 10px; border: 1px solid #c6f6d5; margin-top: 30px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="container" id="form-container">
         <header>
-            <h1>📝 Grille de Positionnement Initial</h1>
-            <p>Titre Professionnel TSMEL - Evaluation Diagnostique</p>
+            <h1>🎓 Questionnaire de Positionnement TSMEL</h1>
+            <p>Evaluation initiale des compétences transversales et techniques</p>
         </header>
         
         <form id="positionnement-form">
             <div class="section">
                 <div class="section-title">👤 Informations Générales</div>
                 <div class="grid-2">
-                    <div class="question"><label>Nom</label><input type="text" name="nom" required></div>
-                    <div class="question"><label>Prénom</label><input type="text" name="prenom" required></div>
+                    <div class="question"><label>Votre Nom</label><input type="text" name="nom" required></div>
+                    <div class="question"><label>Votre Prénom</label><input type="text" name="prenom" required></div>
                 </div>
                 <div class="grid-2">
-                    <div class="question"><label>Email</label><input type="email" name="email" required></div>
-                    <div class="question"><label>Téléphone</label><input type="tel" name="telephone" required></div>
+                    <div class="question"><label>Email Professionnel</label><input type="email" name="email" required></div>
+                    <div class="question"><label>Téléphone de contact</label><input type="tel" name="telephone" required></div>
                 </div>
             </div>
 
             <div class="section">
-                <div class="section-title">📦 Logistique & Expérience</div>
-                <div class="question">
-                    <label>Avez-vous déjà travaillé ou suivi une formation en logistique ?</label>
-                    <select name="exp_log" required>
-                        <option value="">Choisir...</option>
-                        <option value="none">Aucune expérience</option>
-                        <option value="formation">Formation uniquement</option>
-                        <option value="travail">Expérience professionnelle</option>
-                        <option value="both">Les deux</option>
-                    </select>
+                <div class="section-title">📖 Compréhension de Texte (Français)</div>
+                <div class="reading-text">
+                    "La gestion des stocks est un pilier de la logistique. Elle consiste à maintenir une quantité suffisante de produits pour répondre à la demande tout en minimisant les coûts d'immobilisation. Un surplus de stock entraîne des frais de stockage inutiles, tandis qu'une rupture de stock pénalise la satisfaction client et le chiffre d'affaires."
                 </div>
-                <div class="question"><label>Qu'est-ce qu'un WMS ?</label><input type="text" name="log_wms" placeholder="Ex: Logiciel de gestion de stock..."></div>
-                <div class="question"><label>Que signifie FIFO / PEPS ?</label><input type="text" name="log_fifo"></div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">🧮 Mathématiques & Logique</div>
-                <div class="question"><label>Calculer 20% de TVA sur 500€ HT :</label><input type="text" name="math_tva"></div>
-                <div class="question"><label>Un entrepôt de 2000m² est utilisé à 60%. Surface libre ?</label><input type="text" name="math_surface"></div>
-                <div class="question"><label>Convertir 2.5 Tonnes en Kilogrammes :</label><input type="text" name="math_unite"></div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">💻 Bureautique (Excel / Word)</div>
                 <div class="question">
-                    <label>Niveau Excel :</label>
+                    <label>Quel est l'objectif principal de la gestion des stocks selon ce texte ?</label>
+                    <div class="qcm-options">
+                        <label class="qcm-item"><input type="radio" name="fr_q1" value="A" required> A) Acheter le plus de produits possible</label>
+                        <label class="qcm-item"><input type="radio" name="fr_q1" value="B"> B) Equilibrer disponibilité et coûts</label>
+                        <label class="qcm-item"><input type="radio" name="fr_q1" value="C"> C) Supprimer tous les frais de stockage</label>
+                    </div>
+                </div>
+                <div class="question">
+                    <label>Que se passe-t-il en cas de rupture de stock ?</label>
+                    <textarea name="fr_q2" placeholder="Répondez avec vos propres mots..." rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🧮 Raisonnement Mathématique</div>
+                <div class="question">
+                    <label>Problème : Vous devez stocker 1200 palettes. Chaque zone peut en contenir 150. Combien de zones faut-il prévoir ?</label>
+                    <input type="text" name="math_q1" placeholder="Indiquez le chiffre uniquement">
+                </div>
+                <div class="question">
+                    <label>Calcul : Une remise de 15% est appliquée sur un article à 200€. Quel est le prix final ?</label>
+                    <input type="text" name="math_q2" placeholder="Résultat en €">
+                </div>
+                <div class="question">
+                    <label>Logique : Si 3 camions transportent 45 palettes, combien de camions faut-il pour 75 palettes ?</label>
+                    <input type="text" name="math_q3">
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">🇬🇧 Anglais Technique (QCM)</div>
+                <div class="question">
+                    <label>1. How do you say "Entrepôt" in English?</label>
+                    <div class="qcm-options">
+                        <label class="qcm-item"><input type="radio" name="eng_q1" value="A" required> A) Workshop</label>
+                        <label class="qcm-item"><input type="radio" name="eng_q1" value="B"> B) Warehouse</label>
+                        <label class="qcm-item"><input type="radio" name="eng_q1" value="C"> C) Greenhouse</label>
+                    </div>
+                </div>
+                <div class="question">
+                    <label>2. Complete: "The goods ______ delivered tomorrow morning."</label>
+                    <div class="qcm-options">
+                        <label class="qcm-item"><input type="radio" name="eng_q2" value="A" required> A) will be</label>
+                        <label class="qcm-item"><input type="radio" name="eng_q2" value="B"> B) are being</label>
+                        <label class="qcm-item"><input type="radio" name="eng_q2" value="C"> C) have been</label>
+                    </div>
+                </div>
+                <div class="question">
+                    <label>3. What does "ASAP" mean?</label>
+                    <div class="qcm-options">
+                        <label class="qcm-item"><input type="radio" name="eng_q3" value="A" required> A) As Slow As Possible</label>
+                        <label class="qcm-item"><input type="radio" name="eng_q3" value="B"> B) As Soon As Possible</label>
+                        <label class="qcm-item"><input type="radio" name="eng_q3" value="C"> C) Always Send All Products</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📦 Logistique & Informatique</div>
+                <div class="question">
+                    <label>Expliquez brièvement le rôle d'un technicien TSMEL dans un entrepôt :</label>
+                    <textarea name="log_role" rows="3"></textarea>
+                </div>
+                <div class="question">
+                    <label>Sur Excel, quelle fonction permet de chercher une valeur dans un tableau ?</label>
                     <select name="office_excel">
-                        <option value="0">Débutant (saisie)</option>
-                        <option value="1">Intermédiaire (Formules SI, RECHERCHEV)</option>
-                        <option value="2">Avancé (TCD, Macros)</option>
-                    </select>
-                </div>
-                <div class="question"><label>Quelle formule pour additionner les cellules A1 à A10 ?</label><input type="text" name="office_formula"></div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">🇬🇧 Anglais (Niveau B1 CECRL)</div>
-                <div class="question"><label>Translate: "The shipment will be delivered next Monday."</label><input type="text" name="eng_1"></div>
-                <div class="question"><label>Complete: "We need to ____ the stock before the end of the year." (check/checked/checking)</label><input type="text" name="eng_2"></div>
-                <div class="question"><label>What is a "Forklift" in French?</label><input type="text" name="eng_3"></div>
-            </div>
-
-            <div class="section">
-                <div class="section-title">🧠 Profil d'Apprenant</div>
-                <div class="question">
-                    <label>Avez-vous des difficultés particulières (Lecture, Écriture, Calcul) ?</label>
-                    <select name="difficulties">
-                        <option value="non">Non</option>
-                        <option value="oui">Oui</option>
-                    </select>
-                </div>
-                <div class="question"><label>Préférence d'apprentissage :</label>
-                    <select name="pref_app">
-                        <option value="visuel">Visuel (schémas, vidéos)</option>
-                        <option value="auditif">Auditif (explications orales)</option>
-                        <option value="pratique">Pratique (exercices, manipulation)</option>
+                        <option value="">Choisir...</option>
+                        <option value="SOMME">SOMME</option>
+                        <option value="RECHERCHEV">RECHERCHEV</option>
+                        <option value="MOYENNE">MOYENNE</option>
                     </select>
                 </div>
             </div>
 
-            <button type="submit" class="btn-submit">✅ Valider mon positionnement</button>
+            <div class="validation-card">
+                <p>⚠️ En cliquant sur le bouton ci-dessous, vous validez définitivement vos réponses.</p>
+                <button type="submit" class="btn-submit">✅ Valider et envoyer mon questionnaire</button>
+            </div>
         </form>
     </div>
 
     <div id="success-screen">
-        <h1 style="color: #48bb78;">Bravo !</h1>
-        <p>Votre grille de positionnement a été transmise avec succès au formateur.</p>
-        <button onclick="location.reload()" class="btn-submit" style="width: auto; padding: 10px 30px; margin-top: 20px;">Nouvelle saisie</button>
+        <h1 style="color: #48bb78; font-size: 40px;">Merci ! 📤</h1>
+        <p style="font-size: 18px; margin-top: 20px;">Vos réponses ont été transmises avec succès.<br>Le formateur reviendra vers vous pour le débriefing.</p>
     </div>
 
     <script>
@@ -118,14 +146,15 @@
             e.preventDefault();
             const formData = new FormData(this);
             const data = {
-                id: 'TSMEL-' + Math.random().toString(36).substr(2, 9),
+                id: 'TSMEL-' + Date.now().toString(36).toUpperCase(),
                 dateValidation: new Date().toISOString()
             };
             formData.forEach((value, key) => data[key] = value);
             
-            // Sauvegarde locale
+            // Stockage local (Simulation DB)
             localStorage.setItem('apprenant_' + data.id, JSON.stringify(data));
             
+            // Effet visuel
             document.getElementById('form-container').style.display = 'none';
             document.getElementById('success-screen').style.display = 'block';
             window.scrollTo(0,0);
