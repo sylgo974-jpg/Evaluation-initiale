@@ -3,104 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Détails Apprenant - TSMEL</title>
+    <title>Synthèse de Positionnement - TSMEL</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #0284c7; --bg: #f8fafc; --text: #0f172a; }
         body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         header { border-bottom: 2px solid #f1f5f9; margin-bottom: 30px; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .card { padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; }
-        .chart-container { height: 300px; display: flex; justify-content: center; }
-        .badge { padding: 4px 12px; border-radius: 20px; font-weight: bold; }
-        .synthesis { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 20px; margin-top: 20px; border-radius: 4px; }
-        @media print { .no-print { display: none; } .container { box-shadow: none; border: none; } }
-        .btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
-        .btn-back { background: #e2e8f0; color: #475569; }
-        .btn-print { background: var(--primary); color: white; }
+        .card { padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; }
+        .chart-container { height: 350px; display: flex; justify-content: center; align-items: center; }
+        .synthesis-box { background: #fffbeb; border-left: 5px solid #f59e0b; padding: 25px; border-radius: 8px; margin-top: 20px; font-size: 1.1rem; line-height: 1.6; }
+        .score-val { font-size: 2.5rem; font-weight: 800; color: var(--primary); display: block; margin-top: 10px; }
+        .btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block; }
+        .btn-back { background: #f1f5f9; color: #475569; }
+        .btn-print { background: var(--primary); color: white; margin-left: 10px; }
+        .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+        .detail-label { color: #64748b; font-weight: 500; }
+        @media print { .no-print { display: none; } .container { box-shadow: none; border: none; max-width: 100%; } }
     </style>
 </head>
 <body>
 
-<div class="container" id="content">
+<div class="container">
     <header>
         <div>
-            <h1 id="student-name">...</h1>
-            <p id="eval-date" style="color:#64748b">Date de l'évaluation : ...</p>
+            <h1 id="nom-apprenant">Chargement...</h1>
+            <p id="info-eval" style="color:#64748b"></p>
         </div>
         <div class="no-print">
-            <button class="btn btn-back" onclick="location.href='index.html'">Retour</button>
-            <button class="btn btn-print" onclick="window.print()">Imprimer</button>
+            <a href="index.html" class="btn btn-back">⬅ Retour</a>
+            <button onclick="window.print()" class="btn btn-print">🖨 Imprimer</button>
         </div>
     </header>
 
     <div class="grid">
         <div class="card">
-            <h3>📊 Profil de Compétences</h3>
+            <h3>📊 Radar de Compétences</h3>
             <div class="chart-container">
-                <canvas id="radarChart"></canvas>
+                <canvas id="myChart"></canvas>
             </div>
         </div>
         <div class="card">
-            <h3>📈 Scores par Domaine</h3>
+            <h3>🎯 Résultats par Domaine</h3>
             <div style="margin-top: 20px;">
-                <p>Français : <strong id="score-fr">0%</strong></p>
-                <p>Mathématiques : <strong id="score-mat">0%</strong></p>
-                <p>Anglais : <strong id="score-ang">0%</strong></p>
-                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e2e8f0;">
-                <p style="font-size: 1.2rem;">Score Global : <strong id="score-glob" style="color:var(--primary)">0%</strong></p>
+                <div class="detail-row"><span class="detail-label">🇫🇷 Français</span> <strong id="val-fr">0%</strong></div>
+                <div class="detail-row"><span class="detail-label">🔢 Mathématiques</span> <strong id="val-mat">0%</strong></div>
+                <div class="detail-row"><span class="detail-label">🇬🇧 Anglais (B1)</span> <strong id="val-ang">0%</strong></div>
+                <div class="detail-row"><span class="detail-label">📦 Logistique</span> <strong id="val-log">0%</strong></div>
+                <div style="text-align: center; margin-top: 30px;">
+                    <span style="font-size: 0.9rem; color: #64748b;">Moyenne Générale</span>
+                    <span class="score-val" id="global-score">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h3>💼 Profil & Expérience</h3>
+            <div id="profil-details" style="margin-top: 15px; font-size: 0.95rem;">
+                <!-- Rempli par JS -->
+            </div>
+        </div>
+        <div class="card">
+            <h3>💻 Informatique & Besoins</h3>
+            <div id="besoins-details" style="margin-top: 15px; font-size: 0.95rem;">
+                <!-- Rempli par JS -->
             </div>
         </div>
     </div>
 
     <div class="card">
-        <h3>🔍 Synthèse et Préconisations</h3>
-        <div class="synthesis" id="synthesis-text">Chargement...</div>
+        <h3>📝 Synthèse Pédagogique (Auto)</h3>
+        <div class="synthesis-box" id="synthesis">
+            Analyse des réponses en cours...
+        </div>
     </div>
 </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    const results = JSON.parse(localStorage.getItem('eval_results') || '[]');
-    const data = results.find(r => r.id == id);
+    const urlParams = new URLSearchParams(window.location.search);
+    const resultId = urlParams.get('id');
+    const allResults = JSON.parse(localStorage.getItem('eval_results') || '[]');
+    const result = allResults.find(r => r.id == resultId);
 
-    if (!data) {
-        document.body.innerHTML = "<h1>Erreur: Données introuvables</h1>";
+    if (!result) {
+        document.body.innerHTML = "<div style='text-align:center; padding:100px;'><h1>❌ Résultat introuvable</h1><p><a href='index.html'>Retour au dashboard</a></p></div>";
     } else {
-        document.getElementById('student-name').innerText = data.nom;
-        document.getElementById('eval-date').innerText = "Date de l'évaluation : " + data.date;
-        document.getElementById('score-fr').innerText = data.scores.fr + "%";
-        document.getElementById('score-mat').innerText = data.scores.mat + "%";
-        document.getElementById('score-ang').innerText = data.scores.ang + "%";
-        document.getElementById('score-glob').innerText = data.scores.glob + "%";
+        const r = result.reponses;
+        const s = result.scores;
 
-        // Chart
-        new Chart(document.getElementById('radarChart'), {
+        document.getElementById('nom-apprenant').innerText = result.nom;
+        document.getElementById('info-eval').innerText = "Évaluation TP TSMEL du " + result.date;
+        document.getElementById('global-score').innerText = s.glob + "%";
+        document.getElementById('val-fr').innerText = s.fr + "%";
+        document.getElementById('val-mat').innerText = s.mat + "%";
+        document.getElementById('val-ang').innerText = s.ang + "%";
+        document.getElementById('val-log').innerText = s.log + "%";
+
+        // Détails Profil
+        document.getElementById('profil-details').innerHTML = `
+            <div class="detail-row"><span class="detail-label">Diplôme:</span> <span>${r.diplome || 'N/A'}</span></div>
+            <div class="detail-row"><span class="detail-label">Formation Logistique:</span> <span>${r.formation_log}</span></div>
+            <div class="detail-row"><span class="detail-label">Expérience Terrain:</span> <span>${r.travail_log}</span></div>
+            <p style="margin-top:10px; color:#64748b; font-size:0.85rem;"><strong>Attentes:</strong> ${r.attentes || 'Non spécifiées'}</p>
+        `;
+
+        // Détails Besoins
+        document.getElementById('besoins-details').innerHTML = `
+            <div class="detail-row"><span class="detail-label">Excel:</span> <span>${r.office_excel}</span></div>
+            <div class="detail-row"><span class="detail-label">Publipostage Word:</span> <span>${r.office_word}</span></div>
+            <div class="detail-row"><span class="detail-label">Aide lecture/écriture:</span> <span>${r.besoin_aide}</span></div>
+            <div class="detail-row"><span class="detail-label">Aise à l'oral:</span> <span>${r.aise_oral}</span></div>
+        `;
+
+        // Graphique Radar
+        new Chart(document.getElementById('myChart'), {
             type: 'radar',
             data: {
-                labels: ['Français', 'Maths', 'Anglais'],
+                labels: ['Français', 'Mathématiques', 'Anglais', 'Logistique'],
                 datasets: [{
-                    label: 'Profil Apprenant',
-                    data: [data.scores.fr, data.scores.mat, data.scores.ang],
+                    label: 'Score %',
+                    data: [s.fr, s.mat, s.ang, s.log],
                     backgroundColor: 'rgba(2, 132, 199, 0.2)',
                     borderColor: '#0284c7',
+                    borderWidth: 2,
                     pointBackgroundColor: '#0284c7'
                 }]
             },
-            options: { scales: { r: { beginAtZero: true, max: 100 } } }
+            options: {
+                scales: { r: { min: 0, max: 100, ticks: { display: false } } },
+                plugins: { legend: { display: false } }
+            }
         });
 
-        // Synthesis
-        let synth = "";
-        if (data.scores.glob >= 70) synth = "Excellent profil. L'apprenant possède les prérequis nécessaires pour suivre la formation TSMEL sans difficulté majeure.";
-        else if (data.scores.glob >= 40) synth = "Profil équilibré avec quelques points de vigilance. Un accompagnement ponctuel sur les domaines les plus faibles est recommandé.";
-        else synth = "Profil fragile. Une remise à niveau importante est nécessaire, notamment sur les bases fondamentales avant d'aborder les modules techniques.";
+        // Synthèse Automatique
+        let text = "";
+        if(s.glob >= 75) text = "Excellent profil. L'apprenant dispose de bases solides pour entamer la formation TSMEL. Sa maîtrise des prérequis est rassurante.";
+        else if(s.glob >= 50) text = "Profil satisfaisant mais hétérogène. Certains domaines nécessitent une attention particulière pour ne pas pénaliser la progression technique.";
+        else text = "Profil fragile. Des lacunes importantes sur les fondamentaux risquent de rendre le parcours difficile sans un accompagnement de remise à niveau immédiat.";
 
-        if(data.scores.mat < 50) synth += " Attention particulière sur le calcul numérique.";
-        
-        document.getElementById('synthesis-text').innerText = synth;
+        if(s.mat < 50) text += " Un renforcement sur la logique mathématique (pourcentages, surfaces) est vivement conseillé.";
+        if(s.fr < 50) text += " La compréhension de textes techniques semble être un point de blocage.";
+        if(r.besoin_aide === 'Oui') text += " [Alerte Accompagnement] L'apprenant signale un besoin d'aide en lecture/écriture.";
+
+        document.getElementById('synthesis').innerText = text;
     }
 </script>
 
