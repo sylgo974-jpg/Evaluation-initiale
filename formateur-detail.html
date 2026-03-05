@@ -3,203 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synthèse de Positionnement - TSMEL</title>
+    <title>Détails Apprenant - TSMEL</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --primary: #0284c7;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --bg-base: #ffffff;
-            --bg-surface: #f8fafc;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --border: rgba(148, 163, 184, 0.3);
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg-surface); color: var(--text-primary); padding: 40px; }
-        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid var(--border); }
-        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--bg-surface); padding-bottom: 20px; margin-bottom: 30px; }
-        h1 { color: var(--primary); font-size: 1.8rem; }
+        :root { --primary: #0284c7; --bg: #f8fafc; --text: #0f172a; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        header { border-bottom: 2px solid #f1f5f9; margin-bottom: 30px; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
-        .card { padding: 25px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-surface); }
-        .card h3 { margin-bottom: 15px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .stat-item { background: white; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
-        .stat-label { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 5px; }
-        .stat-value { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
-        .synthesis-box { background: #fffaf0; border-left: 5px solid #ed8936; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
-        .chart-container { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); height: 350px; display: flex; align-items: center; justify-content: center; }
-        .correction-list { margin-top: 20px; }
-        .correction-item { padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
-        .badge-success { background: #dcfce7; color: #166534; }
-        .badge-error { background: #fee2e2; color: #991b1b; }
-        .no-print { margin-bottom: 20px; }
-        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; background: var(--primary); color: white; }
-        @media print {
-            body { padding: 0; background: white; }
-            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; }
-            .no-print { display: none; }
-            .card, .chart-container { break-inside: avoid; }
-        }
+        .card { padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px; }
+        .chart-container { height: 300px; display: flex; justify-content: center; }
+        .badge { padding: 4px 12px; border-radius: 20px; font-weight: bold; }
+        .synthesis { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 20px; margin-top: 20px; border-radius: 4px; }
+        @media print { .no-print { display: none; } .container { box-shadow: none; border: none; } }
+        .btn { padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-back { background: #e2e8f0; color: #475569; }
+        .btn-print { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
-    <div class="container" id="report">
+
+<div class="container" id="content">
+    <header>
+        <div>
+            <h1 id="student-name">...</h1>
+            <p id="eval-date" style="color:#64748b">Date de l'évaluation : ...</p>
+        </div>
         <div class="no-print">
-            <button class="btn" onclick="window.print()">🖨️ Imprimer / Sauvegarder PDF</button>
+            <button class="btn btn-back" onclick="location.href='index.html'">Retour</button>
+            <button class="btn btn-print" onclick="window.print()">Imprimer</button>
         </div>
+    </header>
 
-        <header>
-            <div>
-                <h1 id="disp-name">Chargement...</h1>
-                <p id="disp-date" style="color: var(--text-secondary);"></p>
-            </div>
-            <div id="global-score-badge" style="font-size: 2rem; font-weight: 800; color: var(--primary);">--%</div>
-        </header>
-
-        <div class="synthesis-box">
-            <h3 style="margin-bottom: 10px;">🤖 Synthèse Automatique</h3>
-            <div id="synth-content">Analyse du profil en cours...</div>
-        </div>
-
-        <div class="grid">
-            <div class="card">
-                <h3>📊 Scores par Domaine</h3>
-                <div class="stat-grid" id="stat-grid">
-                    <!-- Stats here -->
-                </div>
-            </div>
+    <div class="grid">
+        <div class="card">
+            <h3>📊 Profil de Compétences</h3>
             <div class="chart-container">
                 <canvas id="radarChart"></canvas>
             </div>
         </div>
-
-        <div class="grid">
-            <div class="card">
-                <h3>📝 Détails des Réponses</h3>
-                <div class="correction-list" id="correction-list">
-                    <!-- Correction here -->
-                </div>
-            </div>
-            <div class="card">
-                <h3>💡 Préconisations</h3>
-                <ul id="reco-list" style="padding-left: 20px; color: var(--text-secondary);">
-                    <!-- Recos here -->
-                </ul>
+        <div class="card">
+            <h3>📈 Scores par Domaine</h3>
+            <div style="margin-top: 20px;">
+                <p>Français : <strong id="score-fr">0%</strong></p>
+                <p>Mathématiques : <strong id="score-mat">0%</strong></p>
+                <p>Anglais : <strong id="score-ang">0%</strong></p>
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e2e8f0;">
+                <p style="font-size: 1.2rem;">Score Global : <strong id="score-glob" style="color:var(--primary)">0%</strong></p>
             </div>
         </div>
     </div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const appId = urlParams.get('id');
-        const correctOnes = {
-            m1: "825", m2: "360", m3: "7",
-            a1: "b", a2: "b", a3: "a"
-        };
+    <div class="card">
+        <h3>🔍 Synthèse et Préconisations</h3>
+        <div class="synthesis" id="synthesis-text">Chargement...</div>
+    </div>
+</div>
 
-        function init() {
-            const data = JSON.parse(localStorage.getItem('apprenant_' + appId));
-            if (!data) { document.body.innerHTML = "<h1>Erreur: Données introuvables</h1>"; return; }
-            
-            document.getElementById('disp-name').innerText = (data.nom + " " + data.prenom).toUpperCase();
-            document.getElementById('disp-date').innerText = "Positionnement du " + new Date(data.dateValidation).toLocaleDateString('fr-FR');
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const results = JSON.parse(localStorage.getItem('eval_results') || '[]');
+    const data = results.find(r => r.id == id);
 
-            const scores = calculate(data);
-            render(data, scores);
-        }
+    if (!data) {
+        document.body.innerHTML = "<h1>Erreur: Données introuvables</h1>";
+    } else {
+        document.getElementById('student-name').innerText = data.nom;
+        document.getElementById('eval-date').innerText = "Date de l'évaluation : " + data.date;
+        document.getElementById('score-fr').innerText = data.scores.fr + "%";
+        document.getElementById('score-mat').innerText = data.scores.mat + "%";
+        document.getElementById('score-ang').innerText = data.scores.ang + "%";
+        document.getElementById('score-glob').innerText = data.scores.glob + "%";
 
-        function calculate(data) {
-            let res = { log: 0, mat: 0, ang: 0, glob: 0 };
-            
-            // Logistique
-            let lCount = 0;
-            if (data.competences.comp1 === 'maitrise') res.log += 100; else if (data.competences.comp1 === 'encours') res.log += 60; lCount++;
-            if (data.competences.comp2 === 'maitrise') res.log += 100; else if (data.competences.comp2 === 'encours') res.log += 60; lCount++;
-            if (data.competences.comp3 === 'maitrise') res.log += 100; else if (data.competences.comp3 === 'encours') res.log += 60; lCount++;
-            res.log = Math.round(res.log / lCount);
+        // Chart
+        new Chart(document.getElementById('radarChart'), {
+            type: 'radar',
+            data: {
+                labels: ['Français', 'Maths', 'Anglais'],
+                datasets: [{
+                    label: 'Profil Apprenant',
+                    data: [data.scores.fr, data.scores.mat, data.scores.ang],
+                    backgroundColor: 'rgba(2, 132, 199, 0.2)',
+                    borderColor: '#0284c7',
+                    pointBackgroundColor: '#0284c7'
+                }]
+            },
+            options: { scales: { r: { beginAtZero: true, max: 100 } } }
+        });
 
-            // Maths
-            let mOk = 0;
-            if (data.maths.m1 === correctOnes.m1) mOk++;
-            if (data.maths.m2 === correctOnes.m2) mOk++;
-            if (data.maths.m3.includes(correctOnes.m3)) mOk++;
-            res.mat = Math.round((mOk / 3) * 100);
+        // Synthesis
+        let synth = "";
+        if (data.scores.glob >= 70) synth = "Excellent profil. L'apprenant possède les prérequis nécessaires pour suivre la formation TSMEL sans difficulté majeure.";
+        else if (data.scores.glob >= 40) synth = "Profil équilibré avec quelques points de vigilance. Un accompagnement ponctuel sur les domaines les plus faibles est recommandé.";
+        else synth = "Profil fragile. Une remise à niveau importante est nécessaire, notamment sur les bases fondamentales avant d'aborder les modules techniques.";
 
-            // Anglais
-            let aOk = 0;
-            if (data.anglais.a1 === correctOnes.a1) aOk++;
-            if (data.anglais.a2 === correctOnes.a2) aOk++;
-            if (data.anglais.a3 === correctOnes.a3) aOk++;
-            res.ang = Math.round((aOk / 3) * 100);
+        if(data.scores.mat < 50) synth += " Attention particulière sur le calcul numérique.";
+        
+        document.getElementById('synthesis-text').innerText = synth;
+    }
+</script>
 
-            res.glob = Math.round((res.log + res.mat + res.ang) / 3);
-            return res;
-        }
-
-        function render(data, scores) {
-            document.getElementById('global-score-badge').innerText = scores.glob + "%";
-            
-            const grid = document.getElementById('stat-grid');
-            const domains = [
-                { l: 'Logistique', v: scores.log },
-                { l: 'Maths', v: scores.mat },
-                { l: 'Anglais', v: scores.ang }
-            ];
-            grid.innerHTML = domains.map(d => `
-                <div class="stat-item">
-                    <div class="stat-label">${d.l}</div>
-                    <div class="stat-value">${d.v}%</div>
-                </div>
-            `).join('');
-
-            // Chart
-            new Chart(document.getElementById('radarChart'), {
-                type: 'radar',
-                data: {
-                    labels: ['Logistique', 'Mathématiques', 'Anglais'],
-                    datasets: [{
-                        label: 'Profil Apprenant',
-                        data: [scores.log, scores.mat, scores.ang],
-                        backgroundColor: 'rgba(2, 132, 199, 0.2)',
-                        borderColor: '#0284c7',
-                        pointBackgroundColor: '#0284c7'
-                    }]
-                },
-                options: { scales: { r: { beginAtZero: true, max: 100 } }, plugins: { legend: { display: false } } }
-            });
-
-            // Synthesis
-            let synth = "";
-            if (scores.glob > 70) synth = "Excellent profil. Les bases techniques et transversales sont acquises. ";
-            else if (scores.glob > 40) synth = "Profil intermédiaire. Un accompagnement sur les points faibles identifiés permettra une progression rapide. ";
-            else synth = "Profil débutant. Un renforcement significatif des compétences de base est nécessaire avant d'aborder les modules complexes. ";
-            
-            if (scores.mat < 50) synth += "⚠️ Vigilance particulière sur le calcul numérique. ";
-            if (data.apprentissage.aide === 'oui') synth += "🔍 Besoins spécifiques en lecture/écriture signalés.";
-            document.getElementById('synth-content').innerText = synth;
-
-            // Correction
-            const corr = document.getElementById('correction-list');
-            corr.innerHTML = `
-                <div class="correction-item"><span>Maths Q1 (Somme)</span> ${data.maths.m1 === correctOnes.m1 ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-error">Echec</span>'}</div>
-                <div class="correction-item"><span>Maths Q2 (Remise)</span> ${data.maths.m2 === correctOnes.m2 ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-error">Echec</span>'}</div>
-                <div class="correction-item"><span>Anglais (Warehouse)</span> ${data.anglais.a1 === correctOnes.a1 ? '<span class="badge badge-success">OK</span>' : '<span class="badge badge-error">Echec</span>'}</div>
-            `;
-
-            // Recos
-            const recos = document.getElementById('reco-list');
-            let rItems = ["Poursuivre le programme TSMEL standard."];
-            if (scores.mat < 60) rItems.push("Prévoir des exercices de remise à niveau en calcul professionnel.");
-            if (scores.ang < 60) rItems.push("Utiliser des lexiques bilingues pour les termes techniques.");
-            if (data.apprentissage.style === 'visuel') rItems.push("Favoriser les supports schématiques et vidéos.");
-            recos.innerHTML = rItems.map(i => `<li>${i}</li>`).join('');
-        }
-
-        window.onload = init;
-    </script>
 </body>
 </html>
