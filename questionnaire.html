@@ -18,6 +18,7 @@
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; background: var(--card); padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
         h1 { font-size: 1.875rem; color: var(--text); margin-bottom: 8px; text-align: center; }
+        h3 { font-size: 1.2rem; margin-bottom: 20px; color: var(--primary); }
         p.subtitle { text-align: center; color: var(--text-muted); margin-bottom: 32px; }
         .step { display: none; }
         .step.active { display: block; }
@@ -28,15 +29,20 @@
         .option-item { display: flex; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
         .option-item:hover { background: #f1f5f9; }
         .option-item input { margin-right: 12px; }
+        .option-item input[type="radio"], .option-item input[type="checkbox"] { width: auto; }
         .btn-group { display: flex; justify-content: space-between; margin-top: 32px; }
         button { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: opacity 0.2s; }
         .btn-next { background: var(--primary); color: white; }
         .btn-prev { background: #e2e8f0; color: var(--text); }
+        .btn-submit { background: #16a34a; color: white; }
         .progress-container { height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 32px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--primary); transition: width 0.3s ease; }
         .text-passage { background: #f1f5f9; padding: 20px; border-radius: 8px; margin-bottom: 20px; font-style: italic; border-left: 4px solid var(--primary); }
         .rgpd-notice { margin-top: 20px; display: flex; align-items: flex-start; gap: 10px; font-size: 0.9rem; color: var(--text-muted); }
         .rgpd-notice input { margin-top: 4px; width: auto; }
+        .step-label { font-size: 0.85rem; color: var(--text-muted); text-align: right; margin-bottom: 12px; }
+        .success-box { text-align: center; padding: 40px 20px; }
+        .success-box h2 { color: #16a34a; margin-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -48,10 +54,13 @@
     <div class="progress-container">
         <div class="progress-bar" id="progress"></div>
     </div>
+    <p class="step-label" id="stepLabel"></p>
 
     <form id="quizForm">
-        <!-- Étape 1: Identification -->
+
+        <!-- ===== Étape 1 : Identification ===== -->
         <div class="step active" id="step1">
+            <h3>🪪 Identification</h3>
             <div class="form-group">
                 <label>Nom :</label>
                 <input type="text" name="nom" required>
@@ -68,6 +77,7 @@
                     <option value="Titre Pro TLE">Titre Pro TLE (Niveau 4)</option>
                     <option value="Bac Général / Technologique">Bac Général / Technologique</option>
                     <option value="CAP / BEP">CAP / BEP</option>
+                    <option value="Aucun diplôme">Aucun diplôme</option>
                     <option value="Autre">Autre (Précisez...)</option>
                 </select>
                 <div id="autre_diplome_container" style="display:none; margin-top: 15px;">
@@ -80,16 +90,16 @@
             </div>
             <div class="btn-group">
                 <span></span>
-                <button type="button" class="btn-next" onclick="nextStep(1)">Suivant</button>
+                <button type="button" class="btn-next" onclick="nextStep(1)">Suivant →</button>
             </div>
         </div>
 
-        <!-- Étape 2: Expérience -->
+        <!-- ===== Étape 2 : Expérience professionnelle ===== -->
         <div class="step" id="step2">
-            <h3>Expérience Professionnelle</h3>
+            <h3>💼 Expérience Professionnelle</h3>
             <div class="form-group">
                 <label>Avez-vous déjà suivi une formation dans la logistique ?</label>
-                <select id="formation_log" name="formation_log" onchange="togglePrecision('formation_log', 'precision_formation')" required>
+                <select id="formation_log" name="formation_log" onchange="togglePrecision('formation_log', 'precision_formation')">
                     <option value="Non">Non</option>
                     <option value="Oui">Oui</option>
                 </select>
@@ -99,7 +109,7 @@
             </div>
             <div class="form-group">
                 <label>Avez-vous déjà travaillé dans ce domaine ?</label>
-                <select id="travail_log" name="travail_log" onchange="togglePrecision('travail_log', 'precision_travail')" required>
+                <select id="travail_log" name="travail_log" onchange="togglePrecision('travail_log', 'precision_travail')">
                     <option value="Non">Non</option>
                     <option value="Oui">Oui</option>
                 </select>
@@ -109,27 +119,241 @@
             </div>
             <div class="form-group">
                 <label>Quelles sont vos attentes vis-à-vis de cette formation ?</label>
-                <textarea name="attentes" rows="3"></textarea>
+                <textarea name="attentes" rows="3" placeholder="Décrivez vos objectifs personnels et professionnels..."></textarea>
             </div>
             <div class="btn-group">
-                <button type="button" class="btn-prev" onclick="prevStep(2)">Retour</button>
-                <button type="button" class="btn-next" onclick="nextStep(2)">Suivant</button>
+                <button type="button" class="btn-prev" onclick="prevStep(2)">← Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(2)">Suivant →</button>
             </div>
         </div>
 
-        <!-- Les autres étapes (Logistique, Français, Maths, Anglais, Profil) resteraient ici avec la même logique -->
-        <!-- ... (Contenu abrégé pour la démo, mais devrait être complet dans le fichier réel) ... -->
-        
+        <!-- ===== Étape 3 : Compétences Logistique ===== -->
+        <div class="step" id="step3">
+            <h3>📦 Compétences en Logistique</h3>
+            <div class="form-group">
+                <label>Connaissez-vous le rôle d'un agent logistique en entrepôt ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_role" value="Oui, parfaitement" required> Oui, parfaitement</label>
+                    <label class="option-item"><input type="radio" name="q_role" value="Partiellement"> Partiellement</label>
+                    <label class="option-item"><input type="radio" name="q_role" value="Non, pas du tout"> Non, pas du tout</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Qu'est-ce qu'un bon de commande ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_bdc" value="Un document qui récapitule une demande d'achat" required> Un document qui récapitule une demande d'achat</label>
+                    <label class="option-item"><input type="radio" name="q_bdc" value="Un ticket de caisse"> Un ticket de caisse</label>
+                    <label class="option-item"><input type="radio" name="q_bdc" value="Un bulletin de livraison"> Un bulletin de livraison</label>
+                    <label class="option-item"><input type="radio" name="q_bdc" value="Je ne sais pas"> Je ne sais pas</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Quels engins de manutention connaissez-vous ? (plusieurs réponses possibles)</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="checkbox" name="q_engins" value="Chariot élévateur (CACES 3)"> Chariot élévateur (CACES 3)</label>
+                    <label class="option-item"><input type="checkbox" name="q_engins" value="Transpalette électrique (CACES 1)"> Transpalette électrique (CACES 1)</label>
+                    <label class="option-item"><input type="checkbox" name="q_engins" value="Gerbeur (CACES 6)"> Gerbeur (CACES 6)</label>
+                    <label class="option-item"><input type="checkbox" name="q_engins" value="Aucun"> Aucun</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Savez-vous ce qu'est une unité logistique (palette, colis) ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_ul" value="Oui" required> Oui</label>
+                    <label class="option-item"><input type="radio" name="q_ul" value="Non"> Non</label>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(3)">← Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(3)">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- ===== Étape 4 : Compréhension écrite (Français) ===== -->
+        <div class="step" id="step4">
+            <h3>📖 Compréhension Écrite</h3>
+            <div class="text-passage">
+                <strong>Lisez ce texte :</strong><br><br>
+                « Dans un entrepôt logistique, la réception des marchandises est une étape clé. 
+                Le magasinier vérifie la conformité des produits livrés avec le bon de commande, 
+                contrôle les quantités et l'état des colis, puis range les articles dans les 
+                emplacements prévus. En cas d'anomalie (colis abîmé, quantité incorrecte), 
+                il émet une réserve sur le bon de livraison. »
+            </div>
+            <div class="form-group">
+                <label>1. Quel document le magasinier compare-t-il lors de la réception ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_fr1" value="Le bon de commande" required> Le bon de commande</label>
+                    <label class="option-item"><input type="radio" name="q_fr1" value="La facture"> La facture</label>
+                    <label class="option-item"><input type="radio" name="q_fr1" value="Le catalogue fournisseur"> Le catalogue fournisseur</label>
+                    <label class="option-item"><input type="radio" name="q_fr1" value="Je ne sais pas"> Je ne sais pas</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>2. Que fait-il en cas d'anomalie ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_fr2" value="Il émet une réserve sur le bon de livraison" required> Il émet une réserve sur le bon de livraison</label>
+                    <label class="option-item"><input type="radio" name="q_fr2" value="Il renvoie la marchandise immédiatement"> Il renvoie la marchandise immédiatement</label>
+                    <label class="option-item"><input type="radio" name="q_fr2" value="Il appelle la police"> Il appelle la police</label>
+                    <label class="option-item"><input type="radio" name="q_fr2" value="Je ne sais pas"> Je ne sais pas</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>3. En vos propres mots, résumez en une phrase ce que fait un magasinier lors d'une réception :</label>
+                <textarea name="q_fr3" rows="3" placeholder="Votre réponse..."></textarea>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(4)">← Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(4)">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- ===== Étape 5 : Calculs Mathématiques ===== -->
+        <div class="step" id="step5">
+            <h3>🔢 Calculs Mathématiques</h3>
+            <div class="form-group">
+                <label>1. Une palette contient 48 colis. Vous devez préparer une commande de 120 colis. Combien de palettes complètes pouvez-vous faire ?</label>
+                <input type="number" name="q_math1" placeholder="Votre réponse..." min="0">
+            </div>
+            <div class="form-group">
+                <label>2. Un camion peut transporter 24 000 kg. Vous chargez 18 palettes de 800 kg chacune. Quelle charge totale avez-vous chargée ?</label>
+                <input type="number" name="q_math2" placeholder="Votre réponse en kg..." min="0">
+            </div>
+            <div class="form-group">
+                <label>3. Vous avez reçu 250 colis. Après contrôle, 12 sont abîmés. Quel est le pourcentage de colis conformes ? (arrondi à 1 décimale)</label>
+                <input type="text" name="q_math3" placeholder="Ex: 95,2%">
+            </div>
+            <div class="form-group">
+                <label>4. Un article coûte 3,50 € l'unité. Combien coûtent 144 unités ?</label>
+                <input type="number" name="q_math4" placeholder="Votre réponse en €..." min="0" step="0.01">
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(5)">← Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(5)">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- ===== Étape 6 : Anglais Professionnel ===== -->
+        <div class="step" id="step6">
+            <h3>🇬🇧 Anglais Professionnel</h3>
+            <div class="form-group">
+                <label>1. Quel est le sens du mot <strong>"warehouse"</strong> en français ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_en1" value="Entrepôt" required> Entrepôt</label>
+                    <label class="option-item"><input type="radio" name="q_en1" value="Camion"> Camion</label>
+                    <label class="option-item"><input type="radio" name="q_en1" value="Commande"> Commande</label>
+                    <label class="option-item"><input type="radio" name="q_en1" value="Je ne sais pas"> Je ne sais pas</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>2. Que signifie <strong>"delivery note"</strong> ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_en2" value="Bon de livraison" required> Bon de livraison</label>
+                    <label class="option-item"><input type="radio" name="q_en2" value="Note de frais"> Note de frais</label>
+                    <label class="option-item"><input type="radio" name="q_en2" value="Facture"> Facture</label>
+                    <label class="option-item"><input type="radio" name="q_en2" value="Je ne sais pas"> Je ne sais pas</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>3. Traduisez cette phrase en français : <strong>"The shipment is delayed due to a stock shortage."</strong></label>
+                <textarea name="q_en3" rows="2" placeholder="Votre traduction..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>4. Comment évaluez-vous votre niveau en anglais professionnel ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_en4" value="Aucune notion" required> Aucune notion</label>
+                    <label class="option-item"><input type="radio" name="q_en4" value="Quelques mots de vocabulaire"> Quelques mots de vocabulaire</label>
+                    <label class="option-item"><input type="radio" name="q_en4" value="Je comprends les écrits simples"> Je comprends les écrits simples</label>
+                    <label class="option-item"><input type="radio" name="q_en4" value="Je communique en anglais professionnel"> Je communique en anglais professionnel</label>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(6)">← Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(6)">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- ===== Étape 7 : Outil Numérique ===== -->
+        <div class="step" id="step7">
+            <h3>💻 Outil Numérique &amp; Informatique</h3>
+            <div class="form-group">
+                <label>Quel est votre niveau général en informatique ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_num1" value="Débutant" required> Débutant (je sais allumer un ordinateur)</label>
+                    <label class="option-item"><input type="radio" name="q_num1" value="Intermédiaire"> Intermédiaire (je sais utiliser Word, Excel, naviguer sur internet)</label>
+                    <label class="option-item"><input type="radio" name="q_num1" value="Avancé"> Avancé (j'utilise des logiciels métier, je gère des fichiers)</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Avez-vous déjà utilisé un logiciel de gestion d'entrepôt (WMS) ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_num2" value="Oui" required> Oui</label>
+                    <label class="option-item"><input type="radio" name="q_num2" value="Non"> Non</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Savez-vous utiliser un tableur (Excel / Google Sheets) pour saisir des données ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_num3" value="Oui, je suis à l'aise" required> Oui, je suis à l'aise</label>
+                    <label class="option-item"><input type="radio" name="q_num3" value="Un peu, avec aide"> Un peu, avec aide</label>
+                    <label class="option-item"><input type="radio" name="q_num3" value="Non, je ne sais pas"> Non, je ne sais pas</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Avez-vous accès à un ordinateur ou une tablette à domicile pour travailler en autonomie ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_num4" value="Oui" required> Oui</label>
+                    <label class="option-item"><input type="radio" name="q_num4" value="Non"> Non</label>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(7)">← Retour</button>
+                <button type="button" class="btn-next" onclick="nextStep(7)">Suivant →</button>
+            </div>
+        </div>
+
+        <!-- ===== Étape 8 : Profil & Finalisation ===== -->
+        <div class="step" id="step8">
+            <h3>🎯 Profil &amp; Objectifs</h3>
+            <div class="form-group">
+                <label>Pourquoi avez-vous choisi la formation TSMEL ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_motif" value="Reconversion professionnelle" required> Reconversion professionnelle</label>
+                    <label class="option-item"><input type="radio" name="q_motif" value="Première entrée dans le monde du travail"> Première entrée dans le monde du travail</label>
+                    <label class="option-item"><input type="radio" name="q_motif" value="Évolution de carrière"> Évolution de carrière (je travaille déjà dans la logistique)</label>
+                    <label class="option-item"><input type="radio" name="q_motif" value="Demande de Pôle Emploi / France Travail"> Demande de Pôle Emploi / France Travail</label>
+                    <label class="option-item"><input type="radio" name="q_motif" value="Autre"> Autre raison</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Comment vous sentez-vous par rapport à cette formation ?</label>
+                <div class="options-grid">
+                    <label class="option-item"><input type="radio" name="q_ressenti" value="Motivé(e) et confiant(e)" required> 😊 Motivé(e) et confiant(e)</label>
+                    <label class="option-item"><input type="radio" name="q_ressenti" value="Motivé(e) mais un peu stressé(e)"> 😐 Motivé(e) mais un peu stressé(e)</label>
+                    <label class="option-item"><input type="radio" name="q_ressenti" value="Incertain(e)"> 😕 Incertain(e)</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Avez-vous des besoins particuliers ou contraintes à signaler ? (accessibilité, transport, situation de handicap...)</label>
+                <textarea name="q_besoins" rows="3" placeholder="Facultatif — ces informations restent confidentielles et servent uniquement à adapter l'accompagnement."></textarea>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn-prev" onclick="prevStep(8)">← Retour</button>
+                <button type="button" class="btn-submit" onclick="submitForm()">✅ Terminer &amp; Envoyer</button>
+            </div>
+        </div>
+
     </form>
 </div>
 
 <script>
     let currentStep = 1;
-    const totalSteps = 8; // À ajuster selon le nombre réel d'étapes
+    const totalSteps = 8;
 
     function updateProgress() {
         const progress = (currentStep / totalSteps) * 100;
         document.getElementById('progress').style.width = progress + '%';
+        document.getElementById('stepLabel').textContent = 'Étape ' + currentStep + ' / ' + totalSteps;
     }
 
     function nextStep(step) {
@@ -137,6 +361,7 @@
         document.getElementById('step' + step).classList.remove('active');
         currentStep++;
         document.getElementById('step' + currentStep).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         updateProgress();
     }
 
@@ -144,22 +369,102 @@
         document.getElementById('step' + step).classList.remove('active');
         currentStep--;
         document.getElementById('step' + currentStep).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         updateProgress();
     }
 
     function validateStep(step) {
-        const inputs = document.getElementById('step' + step).querySelectorAll('[required]');
+        const stepEl = document.getElementById('step' + step);
+        const inputs = stepEl.querySelectorAll('[required]');
         for (let input of inputs) {
-            if (!input.value && input.offsetParent !== null) {
-                alert('Veuillez remplir tous les champs obligatoires.');
-                return false;
-            }
-            if (input.type === 'checkbox' && !input.checked) {
-                alert('Veuillez accepter les conditions RGPD.');
-                return false;
+            if (input.type === 'checkbox') {
+                if (!input.checked) {
+                    alert('Veuillez accepter les conditions RGPD.');
+                    input.focus();
+                    return false;
+                }
+            } else if (input.type === 'radio') {
+                const radios = stepEl.querySelectorAll('[name="' + input.name + '"]');
+                const checked = Array.from(radios).some(r => r.checked);
+                if (!checked) {
+                    alert('Veuillez répondre à toutes les questions obligatoires.');
+                    return false;
+                }
+            } else {
+                if (!input.value.trim() && input.offsetParent !== null) {
+                    alert('Veuillez remplir tous les champs obligatoires.');
+                    input.focus();
+                    return false;
+                }
             }
         }
         return true;
+    }
+
+    function collectFormData() {
+        const form = document.getElementById('quizForm');
+        const data = {};
+        const formData = new FormData(form);
+        for (let [key, value] of formData.entries()) {
+            if (data[key]) {
+                data[key] = Array.isArray(data[key]) ? [...data[key], value] : [data[key], value];
+            } else {
+                data[key] = value;
+            }
+        }
+        return data;
+    }
+
+    function calculateScore(data) {
+        const answers = {
+            q_bdc: 'Un document qui récapitule une demande d\'achat',
+            q_fr1: 'Le bon de commande',
+            q_fr2: 'Il émet une réserve sur le bon de livraison',
+            q_math1: '2',
+            q_math2: '14400',
+            q_en1: 'Entrepôt',
+            q_en2: 'Bon de livraison'
+        };
+        let correct = 0;
+        let total = Object.keys(answers).length;
+        for (let [key, val] of Object.entries(answers)) {
+            if (data[key] && data[key].toString().trim() === val) correct++;
+        }
+        return Math.round((correct / total) * 100);
+    }
+
+    function submitForm() {
+        if (!validateStep(8)) return;
+
+        const data = collectFormData();
+        const score = calculateScore(data);
+        const id = Date.now().toString();
+
+        const apprenant = {
+            id,
+            nom: data.nom || '',
+            prenom: data.prenom || '',
+            score,
+            date: new Date().toLocaleDateString('fr-FR'),
+            details: data
+        };
+
+        const existing = JSON.parse(localStorage.getItem('apprenants') || '[]');
+        existing.push(apprenant);
+        localStorage.setItem('apprenants', JSON.stringify(existing));
+
+        // Remplacer le formulaire par un message de succès
+        document.getElementById('quizForm').innerHTML = `
+            <div class="success-box">
+                <h2>✅ Questionnaire envoyé !</h2>
+                <p style="color:#64748b; margin-bottom: 24px;">Merci <strong>${apprenant.prenom} ${apprenant.nom}</strong>, vos réponses ont bien été enregistrées.<br>
+                Votre formateur pourra consulter votre positionnement initial.</p>
+                <p style="font-size: 1.2rem; font-weight: bold; color: #0284c7;">Score indicatif : ${score}%</p>
+            </div>
+        `;
+        document.getElementById('progress').style.width = '100%';
+        document.getElementById('stepLabel').textContent = 'Terminé !';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function toggleAutreDiplome() {
