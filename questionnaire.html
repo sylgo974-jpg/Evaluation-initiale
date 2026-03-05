@@ -16,7 +16,7 @@
         .question { margin-bottom: 20px; }
         label { display: block; font-weight: 600; margin-bottom: 10px; font-size: 15px; color: #4a5568; }
         .reading-text { background: #fdf2f2; padding: 20px; border-radius: 10px; border-left: 4px solid #f56565; margin-bottom: 20px; font-style: italic; font-size: 0.95em; }
-        input[type="text"], input[type="email"], input[type="tel"], select, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; transition: all 0.3s; }
+        input[type="text"], select, textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 15px; transition: all 0.3s; }
         input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
         .qcm-options { display: grid; gap: 10px; }
         .qcm-item { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid #f1f5f9; border-radius: 8px; cursor: pointer; transition: 0.2s; }
@@ -42,10 +42,6 @@
                 <div class="grid-2">
                     <div class="question"><label>Votre Nom</label><input type="text" name="nom" required></div>
                     <div class="question"><label>Votre Prénom</label><input type="text" name="prenom" required></div>
-                </div>
-                <div class="grid-2">
-                    <div class="question"><label>Email Professionnel</label><input type="email" name="email" required></div>
-                    <div class="question"><label>Téléphone de contact</label><input type="tel" name="telephone" required></div>
                 </div>
             </div>
 
