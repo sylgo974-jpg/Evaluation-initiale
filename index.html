@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Formateur - Grille de Positionnement TSMEL</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .link-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            word-break: break-all;
+        }
+        .link-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102,126,234,0.3);
+        }
+        .apprenants-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .apprenant-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .apprenant-card:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        .apprenant-card h3 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .apprenant-card p {
+            color: #666;
+            font-size: 14px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        .status-en-cours {
+            background: #ffeaa7;
+            color: #d63031;
+        }
+        .status-complete {
+            background: #55efc4;
+            color: #00b894;
+        }
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-size: 18px;
+        }
+        .instructions {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .instructions ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        @media print {
+            body { background: white; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Vue Formateur - Grille de Positionnement Initial</h1>
+            <p>Titre professionnel TSMEL (Technicien Supérieur en Méthodes et Exploitation Logistique)</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Colonne gauche : QR Code et Lien -->
+            <div class="card no-print">
+                <h2>📱 Accès Apprenants</h2>
+                <div class="instructions">
+                    <h3>Instructions :</h3>
+                    <ul>
+                        <li>Partagez le QR code ou le lien aux apprenants</li>
+                        <li>Ils accèderont au questionnaire depuis leur smartphone/tablette/PC</li>
+                        <li>Les réponses apparaîtront automatiquement ci-contre</li>
+                        <li>Cliquez sur un apprenant pour voir le détail et exporter en PDF</li>
+                    </ul>
+                </div>
+                
+                <div id="qrcode"></div>
+                
+                <div class="link-box">
+                    <label for="questionnaire-link" style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">
+                        Lien du questionnaire :
+                    </label>
+                    <input type="text" id="questionnaire-link" readonly>
+                    <button class="btn" onclick="copierLien()">📋 Copier le lien</button>
+                </div>
+            </div>
+
+            <!-- Colonne droite : Liste des apprenants -->
+            <div class="card">
+                <h2>👥 Apprenants Enregistrés</h2>
+                <div class="apprenants-list" id="apprenants-list">
+                    <div class="no-data">
+                        <p>Aucun questionnaire reçu pour le moment.</p>
+                        <p style="margin-top: 10px; font-size: 14px;">Les réponses des apprenants apparaîtront ici en temps réel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const QUESTIONNAIRE_URL = window.location.origin + window.location.pathname.replace('index.html', 'questionnaire.html');
+        
+        // Générer le QR Code
+        document.addEventListener('DOMContentLoaded', () => {
+            new QRCode(document.getElementById("qrcode"), {
+                text: QUESTIONNAIRE_URL,
+                width: 256,
+                height: 256,
+                colorDark: "#667eea",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            document.getElementById('questionnaire-link').value = QUESTIONNAIRE_URL;
+            
+            // Charger les données depuis localStorage
+            chargerApprenants();
+            
+            // Rafraîchir toutes les 2 secondes
+            setInterval(chargerApprenants, 2000);
+        });
+
+        function copierLien() {
+            const input = document.getElementById('questionnaire-link');
+            input.select();
+            document.execCommand('copy');
+            alert('✅ Lien copié dans le presse-papier !');
+        }
+
+        function chargerApprenants() {
+            const apprenants = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('apprenant_')) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        apprenants.push(data);
+                    } catch (e) {
+                        console.error('Erreur parsing:', e);
+                    }
+                }
+            }
+            
+            afficherApprenants(apprenants);
+        }
+
+        function afficherApprenants(apprenants) {
+            const container = document.getElementById('apprenants-list');
+            
+            if (apprenants.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data">
+                        <p>Aucun questionnaire reçu pour le moment.</p>
+                        <p style="margin-top: 10px; font-size: 14px;">Les réponses des apprenants apparaîtront ici en temps réel.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Trier par date (plus récent en premier)
+            apprenants.sort((a, b) => new Date(b.dateValidation) - new Date(a.dateValidation));
+            
+            container.innerHTML = apprenants.map(app => {
+                const date = new Date(app.dateValidation);
+                const dateStr = date.toLocaleDateString('fr-FR', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="apprenant-card" onclick="ouvrirDetailApprenant('${app.id}')">
+                        <h3>${app.nom} ${app.prenom}</h3>
+                        <p>📧 ${app.email}</p>
+                        <p>📞 ${app.telephone}</p>
+                        <p>📅 Soumis le : ${dateStr}</p>
+                        <span class="status-badge status-complete">✓ Complété</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function ouvrirDetailApprenant(id) {
+            // Ouvrir la vue détaillée dans un nouvel onglet ou une modale
+            window.open('formateur-detail.html?id=' + id, '_blank');
+        }
+    </script>
+</body>
+</html>
