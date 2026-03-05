@@ -3,255 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vue Formateur - Grille de Positionnement TSMEL</title>
+    <title>Console Formateur - TSMEL</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        header {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        header h1 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-        header p {
-            color: #666;
-            font-size: 1.1em;
-        }
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-        }
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-        .card h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-        }
-        #qrcode {
-            display: flex;
-            justify-content: center;
-            margin: 30px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        .link-box {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            word-break: break-all;
-        }
-        .link-box input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        .btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s;
-        }
-        .btn:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102,126,234,0.3);
-        }
-        .apprenants-list {
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        .apprenant-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        .apprenant-card:hover {
-            background: #e9ecef;
-            border-color: #667eea;
-            transform: translateX(5px);
-        }
-        .apprenant-card h3 {
-            color: #333;
-            margin-bottom: 8px;
-        }
-        .apprenant-card p {
-            color: #666;
-            font-size: 14px;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 8px;
-        }
-        .status-complete {
-            background: #55efc4;
-            color: #00b894;
-        }
-        .no-data {
-            text-align: center;
-            color: #999;
-            padding: 40px;
-            font-size: 18px;
-        }
-        .instructions {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-        .instructions h3 {
-            color: #856404;
-            margin-bottom: 10px;
-        }
-        .instructions ul {
-            margin-left: 20px;
-            color: #856404;
-        }
-        .instructions li {
-            margin-bottom: 8px;
-        }
-        @media print {
-            body { background: white; }
-            .no-print { display: none !important; }
-        }
+        :root { --primary: #667eea; --secondary: #764ba2; --bg: #f8f9fa; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { background: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .main-grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary); margin-bottom: 20px; font-size: 1.2em; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        #qrcode { display: flex; justify-content: center; margin: 20px 0; background: #f8fafc; padding: 20px; border-radius: 10px; }
+        .apprenant-item { background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 15px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; display: flex; justify-content: space-between; align-items: center; }
+        .apprenant-item:hover { border-color: var(--primary); background: #f1f5f9; transform: translateX(5px); }
+        .apprenant-info h3 { font-size: 16px; margin-bottom: 5px; }
+        .apprenant-info p { font-size: 13px; color: #64748b; }
+        .badge { background: var(--primary); color: white; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .empty-state { text-align: center; padding: 40px; color: #94a3b8; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🎓 Vue Formateur - Grille de Positionnement Initial</h1>
-            <p>Titre professionnel TSMEL (Technicien Supérieur en Méthodes et Exploitation Logistique)</p>
+            <h1>👨‍🏫 Console de Suivi Formateur - TSMEL</h1>
+            <p>Gérez les positionnements et accédez aux tableaux de bord individuels</p>
         </header>
 
         <div class="main-grid">
-            <div class="card no-print">
+            <!-- Partage -->
+            <div class="card">
                 <h2>📱 Accès Apprenants</h2>
-                <div class="instructions">
-                    <h3>Instructions :</h3>
-                    <ul>
-                        <li>Partagez le QR code ou le lien aux apprenants</li>
-                        <li>Ils accèderont au questionnaire depuis leur smartphone/tablette/PC</li>
-                        <li>Les réponses apparaîtront automatiquement ci-contre</li>
-                    </ul>
-                </div>
-                
+                <p style="font-size: 14px; color: #64748b; margin-bottom: 15px;">Faites scanner ce QR Code pour lancer le questionnaire :</p>
                 <div id="qrcode"></div>
-                
-                <div class="link-box">
-                    <label for="questionnaire-link" style="display: block; margin-bottom: 8px; font-weight: bold; color: #333;">
-                        Lien du questionnaire :
-                    </label>
-                    <input type="text" id="questionnaire-link" readonly>
-                    <button class="btn" onclick="copierLien()">📋 Copier le lien</button>
+                <div style="background: #f1f5f9; padding: 10px; border-radius: 8px; word-break: break-all; font-size: 12px; font-family: monospace;">
+                    <span id="url-text"></span>
                 </div>
             </div>
 
+            <!-- Liste -->
             <div class="card">
-                <h2>👥 Apprenants Enregistrés</h2>
-                <div class="apprenants-list" id="apprenants-list">
-                    <div class="no-data">
-                        <p>Aucun questionnaire reçu pour le moment.</p>
-                    </div>
+                <h2>👥 Apprenants ayant validé (Cliquez pour voir le Dashboard)</h2>
+                <div id="apprenants-list">
+                    <div class="empty-state">En attente de réponses...</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // CORRECTION ICI : Le QR code doit pointer vers questionnaire.html
         const currentPath = window.location.pathname;
-        const QUESTIONNAIRE_URL = window.location.origin + currentPath.substring(0, currentPath.lastIndexOf('/') + 1) + 'questionnaire.html';
-        
+        const BASE_URL = window.location.origin + currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+        const QUESTIONNAIRE_URL = BASE_URL + 'questionnaire.html';
+
         document.addEventListener('DOMContentLoaded', () => {
+            // QR Code
             new QRCode(document.getElementById("qrcode"), {
                 text: QUESTIONNAIRE_URL,
-                width: 256,
-                height: 256,
+                width: 200,
+                height: 200,
                 colorDark: "#667eea",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
+                colorLight: "#ffffff"
             });
-            
-            document.getElementById('questionnaire-link').value = QUESTIONNAIRE_URL;
-            chargerApprenants();
-            setInterval(chargerApprenants, 2000);
+            document.getElementById('url-text').innerText = QUESTIONNAIRE_URL;
+
+            // Chargement initial et rafraîchissement
+            loadApprenants();
+            setInterval(loadApprenants, 3000);
         });
 
-        function copierLien() {
-            const input = document.getElementById('questionnaire-link');
-            input.select();
-            document.execCommand('copy');
-            alert('✅ Lien copié !');
-        }
-
-        function chargerApprenants() {
-            const apprenants = [];
+        function loadApprenants() {
+            const listContainer = document.getElementById('apprenants-list');
+            const data = [];
+            
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key.startsWith('apprenant_')) {
-                    try { apprenants.push(JSON.parse(localStorage.getItem(key))); } catch (e) {}
+                    try {
+                        data.push(JSON.parse(localStorage.getItem(key)));
+                    } catch(e) {}
                 }
             }
-            afficherApprenants(apprenants);
-        }
 
-        function afficherApprenants(apprenants) {
-            const container = document.getElementById('apprenants-list');
-            if (apprenants.length === 0) {
-                container.innerHTML = '<div class="no-data"><p>Aucun questionnaire reçu.</p></div>';
-                return;
-            }
-            apprenants.sort((a, b) => new Date(b.dateValidation) - new Date(a.dateValidation));
-            container.innerHTML = apprenants.map(app => `
-                <div class="apprenant-card" onclick="window.open('formateur-detail.html?id=${app.id}', '_blank')">
-                    <h3>${app.nom} ${app.prenom}</h3>
-                    <p>📧 ${app.email}</p>
-                    <p>📅 ${new Date(app.dateValidation).toLocaleString('fr-FR')}</p>
-                    <span class="status-badge status-complete">✓ Complété</span>
+            if (data.length === 0) return;
+
+            data.sort((a, b) => new Date(b.dateValidation) - new Date(a.dateValidation));
+
+            listContainer.innerHTML = data.map(app => `
+                <div class="apprenant-item" onclick="window.open('formateur-detail.html?id=${app.id}', '_blank')">
+                    <div class="apprenant-info">
+                        <h3>${app.nom.toUpperCase()} ${app.prenom}</h3>
+                        <p>📅 Validé le ${new Date(app.dateValidation).toLocaleString('fr-FR')}</p>
+                    </div>
+                    <div class="badge">VOIR DASHBOARD 📊</div>
                 </div>
             `).join('');
         }
